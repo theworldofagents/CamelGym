@@ -2,9 +2,10 @@ import asyncio
 import platform
 import fire
 import random
-# import sys
-# sys.path.append("..")
-# sys.path.insert(1, os.path.join(sys.path[0], '..'))
+import sys
+import os
+sys.path.append("..")
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 from camelgym.logs import logger
 from camelgym.team import Team

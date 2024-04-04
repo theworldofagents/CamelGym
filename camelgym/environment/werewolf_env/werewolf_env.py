@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# @Desc   : MG Werewolf Env
+
 
 from pydantic import Field
 

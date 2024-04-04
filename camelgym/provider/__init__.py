@@ -1,6 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 
-from camelgym.provider.openai_api import OpenAIGPTAPI
+from camelgym.provider.openai_api import OpenAILLM
+from camelgym.provider.human_provider import HumanProvider
 
-
-__all__ = ["OpenAIGPTAPI"]
+__all__ = [
+    "OpenAILLM",
+    "HumanProvider",
+]

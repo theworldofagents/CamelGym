@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import DefaultDict, Iterable, Set
 
-from camel.camel.memories import BaseMemory
+from camel.memories import BaseMemory
 
 from pydantic import BaseModel, Field, SerializeAsAny
 
@@ -16,6 +16,12 @@ class Memory(BaseModel, BaseMemory):
     storage: list[SerializeAsAny[Message]] = []
     index: DefaultDict[str, list[SerializeAsAny[Message]]] = Field(default_factory=lambda: defaultdict(list))
     ignore_id: bool = False
+
+    def get_context(self):
+        pass
+
+    def write_records(self):
+        pass
 
     def add(self, message: Message):
         """Add a new message to storage, while updating the index"""

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-from camelgym.config import Config
+from camelgym.call_config import Config
 
 
 class BaseStore(ABC):

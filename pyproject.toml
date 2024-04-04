@@ -1,0 +1,8 @@
+[project]
+name = "camelgym"
+version = "0.0.0"
+description = "Gym of LLM-based agents"
+
+[build-system]
+build-backend = "flit_core.buildapi"
+requires = ["flit_core >=3.2,<4"]
