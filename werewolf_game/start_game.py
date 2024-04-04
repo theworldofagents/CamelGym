@@ -2,10 +2,9 @@ import asyncio
 import platform
 import fire
 import random
-import sys
-import os
-sys.path.append("..")
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
+# import sys
+# sys.path.append("..")
+# sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 from camelgym.logs import logger
 from camelgym.team import Team
@@ -59,16 +58,6 @@ async def start_game(
     use_reflection: bool = True, use_experience: bool = False, use_memory_selection: bool = False,
     new_experience_version: str = "",
 ):
-    # game = WerewolfGame()
-    # game_setup, players = init_game_setup(
-    #     shuffle=shuffle, add_human=add_human, use_reflection=use_reflection, use_experience=use_experience,
-    #     use_memory_selection=use_memory_selection, new_experience_version=new_experience_version,
-    # )
-    # players = [Moderator()] + players
-    # game.hire(players)
-    # game.invest(investment)
-    # game.start_project(game_setup)
-    # await game.run(n_round=n_round)
 
     env = WerewolfEnv(desc="werewolf game")
     game_setup, players = init_game_setup(
@@ -79,7 +68,7 @@ async def start_game(
     env.add_roles(players)
     for p in players:
         env.set_addresses(p, p.addresses)
-    env.publish_message(
+    env.pub_mes(
             Message(role="User", content=game_setup, cause_by=UserRequirement, restricted_to="Moderator")
         )
     game = Team(investment=investment, env=env, roles=players)

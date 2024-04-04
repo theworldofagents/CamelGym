@@ -1,17 +1,11 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-@Time    : 2024/1/4 16:32
-@Author  : alexanderwu
-@File    : context.py
-"""
+
 import os
 from pathlib import Path
 from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from CamelGym.camelgym.call_config import Config
+from camelgym.call_config import Config
 from camelgym.configs.llm_config import LLMConfig
 from camelgym.provider.base_llm import BaseLLM
 from camelgym.provider.llm_provider_registry import create_llm_instance

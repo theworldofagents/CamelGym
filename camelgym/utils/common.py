@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 import ast
@@ -30,7 +31,10 @@ from camelgym.utils.exceptions import handle_exception
 
 
 def check_cmd_exists(command) -> int:
-
+    """检查命令是否存在
+    :param command: 待检查的命令
+    :return: 如果命令存在，返回0，如果不存在，返回非0
+    """
     if platform.system().lower() == "windows":
         check_command = "where " + command
     else:
@@ -48,13 +52,19 @@ def require_python_version(req_version: Tuple) -> bool:
 class OutputParser:
     @classmethod
     def parse_blocks(cls, text: str):
+        # 首先根据"##"将文本分割成不同的block
         blocks = text.split("##")
 
+        # 创建一个字典，用于存储每个block的标题和内容
         block_dict = {}
 
+        # 遍历所有的block
         for block in blocks:
+            # 如果block不为空，则继续处理
             if block.strip() != "":
+                # 将block的标题和内容分开，并分别去掉前后的空白字符
                 block_title, block_content = block.split("\n", 1)
+                # LLM可能出错，在这里做一下修正
                 if block_title[-1] == ":":
                     block_title = block_title[:-1]
                 block_dict[block_title.strip()] = block_content.strip()
@@ -157,6 +167,13 @@ class OutputParser:
                     content = cls.parse_file_list(text=content)
                 except Exception:
                     pass
+            # TODO: 多余的引号去除有风险，后期再解决
+            # elif typing == str:
+            #     # 尝试去除多余的引号
+            #     try:
+            #         content = cls.parse_str(text=content)
+            #     except Exception:
+            #         pass
             parsed_data[block] = content
         return parsed_data
 
@@ -220,17 +237,22 @@ class CodeParser:
 
     @classmethod
     def parse_blocks(cls, text: str):
+        # 首先根据"##"将文本分割成不同的block
         blocks = text.split("##")
 
+        # 创建一个字典，用于存储每个block的标题和内容
         block_dict = {}
 
+        # 遍历所有的block
         for block in blocks:
+            # 如果block不为空，则继续处理
             if block.strip() == "":
                 continue
             if "\n" not in block:
                 block_title = block
                 block_content = ""
             else:
+                # 将block的标题和内容分开，并分别去掉前后的空白字符
                 block_title, block_content = block.split("\n", 1)
             block_dict[block_title.strip()] = block_content.strip()
 
@@ -290,7 +312,9 @@ class NoMoneyException(Exception):
 
 
 def print_members(module, indent=0):
-
+    """
+    https://stackoverflow.com/questions/1796180/how-can-i-get-a-list-of-all-classes-within-current-module-in-python
+    """
     prefix = " " * indent
     for name, obj in inspect.getmembers(module):
         print(name, obj)
