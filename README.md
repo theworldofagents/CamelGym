@@ -48,4 +48,6 @@ Start the game:
 python werewolf_game/start_game.py
 ```
 
+### Pokemon
+still building
 
