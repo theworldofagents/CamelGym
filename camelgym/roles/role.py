@@ -6,6 +6,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, Iterable, Optional, Set, Type, Union
 
 from pydantic import BaseModel, ConfigDict, Field, SerializeAsAny, model_validator
+from camel.agents import BaseAgent
 
 from camelgym.actions import Action, ActionOutput
 from camelgym.actions.action_node import ActionNode
@@ -110,7 +111,7 @@ class RoleContext(BaseModel):
         super().model_rebuild(**kwargs)
 
 
-class Role(SerializationMixin, ContextMixin, BaseModel):
+class Role(SerializationMixin, ContextMixin, BaseModel, BaseAgent):
     """Role/Agent"""
 
     model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
@@ -236,6 +237,12 @@ class Role(SerializationMixin, ContextMixin, BaseModel):
         else:
             action.set_llm(self.llm, override=False)
         action.set_prefix(self._get_prefix())
+    
+    def reset(self):
+        self._reset()
+    
+    def step(self):
+        pass
 
     def set_action(self, action: Action):
         """Add action to the role."""
