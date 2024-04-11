@@ -49,5 +49,10 @@ python werewolf_game/start_game.py
 ```
 
 ### Pokemon
-still building
+
+1. Copy your legally obtained Pokemon Red ROM into the base directory. You can find this using google, it should be 1MB. Rename it to `PokemonRed.gb` if it is not already. The sha1 sum should be `ea9bcae617fdf159b045185467ae58b2e4a48b9a`, which you can verify by running `shasum PokemonRed.gb`. 
+2. Move into the `baselines/` directory:  
+ ```cd baselines```  
+3. Run:  
+```python run_pretrained_interactive.py```
 
