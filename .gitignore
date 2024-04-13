@@ -184,3 +184,4 @@ metagpt/tools/schemas
 config/
 
 pokemon/test*
+pokemon/baselines/session_dcbd8d46
