@@ -2,10 +2,19 @@ from os.path import exists
 from pathlib import Path
 import uuid
 from red_gym_env import RedGymEnv
-from llmagent import PokeEnv
+from pokemon.llmagent import PokeEnv
 from colorama import Fore
 from camel.utils import print_text_animated
+from camel.types import ModelType
 from stable_baselines3.common.utils import set_random_seed
+
+import os
+
+# Get the directory path of the current script
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Get the parent directory of the current directory
+parent_dir = os.path.dirname(current_dir)
 
 def make_env(rank, env_conf, seed=0):
     """
@@ -29,22 +38,20 @@ if __name__ == '__main__':
 
     env_config = {
                 'headless': False, 'save_final_state': True, 'early_stop': False,
-                'action_freq': 24, 'init_state': '../has_pokedex_nballs.state', 'max_steps': ep_length, 
+                'action_freq': 24, 'init_state': parent_dir + '/has_pokedex_nballs.state', 'max_steps': ep_length, 
                 'print_rewards': True, 'save_video': False, 'fast_video': True, 'session_path': sess_path,
-                'gb_path': '../PokemonRed.gb', 'debug': False, 'sim_frame_dist': 2_000_000.0, 'extra_buttons': True
+                'gb_path': parent_dir + '/PokemonRed.gb', 'debug': False, 'sim_frame_dist': 2_000_000.0, 'extra_buttons': True
             }
     
     num_cpu = 1 #64 #46  # Also sets the number of episodes per training iteration
     env = make_env(0, env_config)() #SubprocVecEnv([make_env(i, env_config) for i in range(num_cpu)])
 
-    task_prompt = "You are playing Pokemon Red on GameBoy, and your target is to clear the game. Next, \
-    I would give you a sequntial of its game screenshot, and you should return me the next button you should press. \
-    Three have six buttons you can press, which are UP, DOWN, LEFT, RIGHT, A and B. Consider you would press that \
-    button a very shot time, like 0.5 second."
+    task_prompt = "You are playing Pokemon Red on GameBoy, and your target is to clear the game. Next, I would give you a sequntial of its game screenshot, and you should return me the next button you should press. Three have six buttons you can press, which are UP, DOWN, LEFT, RIGHT, A and B. Consider you would press that button a very shot time, like 0.5 second. Return me one of the six buttons each time."
+
     input_msg = "Return me one of the six buttons each time."
 
     print(Fore.YELLOW + f"Original task prompt:\n{task_prompt}\n")
-    poke_session = PokeEnv(env, "Not Filled", "Gamer", task_prompt=task_prompt)
+    poke_session = PokeEnv(env, assistant_role_name = "NotFilled", user_role_name = "Gamer", model_type = ModelType.GPT_4_TURBO, task_prompt=task_prompt)
     print(Fore.CYAN + f"Specified task prompt:\n{poke_session.task_prompt}\n")
 
     res = poke_session.step()
