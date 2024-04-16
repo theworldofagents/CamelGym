@@ -4,6 +4,8 @@ from camel.responses import ChatAgentResponse
 import base64
 import requests
 from openai import OpenAI
+from PIL import Image
+from io import BytesIO
 
 client = OpenAI()
 
@@ -19,7 +21,16 @@ class PokeEnv(RolePlaying):
     def step(self):
         frame_list = []
         for i in range(self.pokenv.frame_stacks):
-            frame_list.append(self.encode_image(self.pokenv.recent_frames[i,...]))
+            img = self.pokenv.recent_frames[i,...]
+            img = Image.fromarray(img)
+            img.show()
+            # Convert the NumPy array to a PIL Imag
+
+            # Save the image to a bytes buffer instead of a file
+            buffer = BytesIO()
+            img.save(buffer, format="PNG")
+            image_data = buffer.getvalue()
+            frame_list.append(self.encode_image(image_data))
             print("frame_list length", len(frame_list))
         
         # assistant_msg = BaseMessage.make_assistant_message(
@@ -56,7 +67,7 @@ class PokeEnv(RolePlaying):
   ],
     max_tokens=300,
 )
-        print(response.choices[0])
+        return response.choices[0]
 
         # user_response = self.user_agent.step(assistant_msg)
         # # if user_response.terminated or user_response.msgs is None:

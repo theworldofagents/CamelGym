@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
     res = poke_session.step()
 
-    print_text_animated(Fore.GREEN + "AI Response:\n\n"f"{res.msg.content}\n")
+    print_text_animated(Fore.GREEN + "AI Response:\n\n"f"{res}\n")
         
     # #keyboard.on_press_key("M", toggle_agent)
     # obs, info = env.reset()
