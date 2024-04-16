@@ -6,6 +6,8 @@ import requests
 from openai import OpenAI
 from PIL import Image
 from io import BytesIO
+import matplotlib.pyplot as plt
+from pathlib import Path
 
 client = OpenAI()
 
@@ -22,8 +24,10 @@ class PokeEnv(RolePlaying):
         frame_list = []
         for i in range(self.pokenv.frame_stacks):
             img = self.pokenv.recent_frames[i,...]
-            img = Image.fromarray(img)
-            img.show()
+            # img = Image.fromarray(img)
+            plt.imsave(
+                self.pokenv.s_path / Path(f'recent_meme_{str(i)}.jpeg'), 
+                img)
             # Convert the NumPy array to a PIL Imag
 
             # Save the image to a bytes buffer instead of a file
@@ -31,8 +35,8 @@ class PokeEnv(RolePlaying):
             img.save(buffer, format="PNG")
             image_data = buffer.getvalue()
             frame_list.append(self.encode_image(image_data))
-            print("frame_list length", len(frame_list))
-        
+
+        return
         # assistant_msg = BaseMessage.make_assistant_message(
         response = client.chat.completions.create(
             model="gpt-4-turbo",
