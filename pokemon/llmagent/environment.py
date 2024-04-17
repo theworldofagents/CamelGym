@@ -52,7 +52,7 @@ class PokeEnv(RolePlaying):
                 "content": [
         {
           "type": "text",
-          "text": "The following are the three sequential frames of the pokemon game, which button I should press next?",
+          "text": "The following are the three sequential frames of the pokemon game, which button I should press next? Return me one of the six buttons. ",
         },
         {
           "type": "image_url",
