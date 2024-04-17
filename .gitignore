@@ -185,3 +185,5 @@ config/
 
 pokemon/test*
 pokemon/baselines/session*
+
+session*

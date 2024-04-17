@@ -8,6 +8,7 @@ from PIL import Image
 from io import BytesIO
 import matplotlib.pyplot as plt
 from pathlib import Path
+import numpy as np
 
 client = OpenAI()
 
@@ -15,6 +16,10 @@ class PokeEnv(RolePlaying):
     def __init__(self, env, *args, **kwargs):
         super().__init__(*args, **kwargs)  # Pass all parent-required parameters concisely
         self.pokenv = env
+        self.recent_frames = np.zeros(
+            (env.frame_stacks, 144, 
+             160, 3),
+            dtype=np.uint8)
 
     # Function to encode the image
     def encode_image(self, image):
@@ -22,12 +27,14 @@ class PokeEnv(RolePlaying):
     
     def step(self):
         frame_list = []
+        self.recent_frames = np.roll(self.recent_frames, 1, axis=0)
+        self.recent_frames[0] = self.pokenv.render(reduce_res=False)
         for i in range(self.pokenv.frame_stacks):
-            img = self.pokenv.recent_frames[i,...]
-            # img = Image.fromarray(img)
-            plt.imsave(
-                self.pokenv.s_path / Path(f'recent_meme_{str(i)}.jpeg'), 
-                img)
+            img = self.recent_frames[i,...]
+            img = Image.fromarray(img)
+            # plt.imsave(
+            #     self.pokenv.s_path / Path(f'recent_meme_{str(i)}.jpeg'), 
+            #     img)
             # Convert the NumPy array to a PIL Imag
 
             # Save the image to a bytes buffer instead of a file
@@ -36,7 +43,6 @@ class PokeEnv(RolePlaying):
             image_data = buffer.getvalue()
             frame_list.append(self.encode_image(image_data))
 
-        return
         # assistant_msg = BaseMessage.make_assistant_message(
         response = client.chat.completions.create(
             model="gpt-4-turbo",
