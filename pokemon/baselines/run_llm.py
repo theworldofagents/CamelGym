@@ -54,9 +54,15 @@ if __name__ == '__main__':
     poke_session = PokeEnv(env, assistant_role_name = "NotFilled", user_role_name = "Gamer", model_type = ModelType.GPT_4_TURBO, task_prompt=task_prompt)
     print(Fore.CYAN + f"Specified task prompt:\n{poke_session.task_prompt}\n")
 
-    res = poke_session.step()
-
-    print_text_animated(Fore.GREEN + "AI Response:\n\n"f"{res}\n")
+    obs, info = poke_session.reset()
+    while True:
+        obs, rewards, terminated, truncated, info = poke_session.step()
+        poke_session.render()
+        if truncated:
+            break
+    poke_session.close()
+    # res = poke_session.step()
+    # print_text_animated(Fore.GREEN + "AI Response:\n\n"f"{res}\n")
 
 
         
@@ -75,4 +81,3 @@ if __name__ == '__main__':
     #     env.render()
     #     if truncated:
     #         break
-    env.close()

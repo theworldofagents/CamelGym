@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import numpy as np
 import json
+from pyboy.utils import WindowEvent
 
 client = OpenAI()
 
@@ -21,10 +22,28 @@ class PokeEnv(RolePlaying):
             (env.frame_stacks, 144, 
              160, 3),
             dtype=np.uint8)
+        
+        self.action_to_index = {
+            "DOWN": self.pokenv.valid_actions.index(WindowEvent.PRESS_ARROW_DOWN),
+            "LEFT": self.pokenv.valid_actions.index(WindowEvent.PRESS_ARROW_LEFT),
+            "RIGHT": self.pokenv.valid_actions.index(WindowEvent.PRESS_ARROW_RIGHT),
+            "UP": self.pokenv.valid_actions.index(WindowEvent.PRESS_ARROW_UP),
+            "A": self.pokenv.valid_actions.index(WindowEvent.PRESS_BUTTON_A),
+            "B": self.pokenv.valid_actions.index(WindowEvent.PRESS_BUTTON_B),
+        }
 
     # Function to encode the image
     def encode_image(self, image):
         return base64.b64encode(image).decode('utf-8')
+    
+    def reset(self):
+        return self.pokenv.reset()
+
+    def render(self):
+        return self.pokenv.render()
+    
+    def close(self):
+        return self.pokenv.close()
     
     def step(self):
         frame_list = []
@@ -45,43 +64,52 @@ class PokeEnv(RolePlaying):
             frame_list.append(self.encode_image(image_data))
 
         # assistant_msg = BaseMessage.make_assistant_message(
-        response = client.chat.completions.create(
-            model="gpt-4-turbo",
-            messages=[
-              {
-                "role": "user",
-                "content": [
-        {
-          "type": "text",
-          "text": "The following are the three sequential frames of the pokemon game, which button I should press next? Return me one of the six buttons. You will respond with JSON keys \"UP\", \"DOWN\", \"LEFT\", \"RIGHT\", and \"A\" and \"B\". ",
-        },
-        {
-          "type": "image_url",
-          "image_url":  {
-                    "url": f"data:image/jpeg;base64,{frame_list[0]}"
-                },
-        },
-        {
-          "type": "image_url",
-          "image_url":  {
-                    "url": f"data:image/jpeg;base64,{frame_list[1]}"
-                },
-        },
-        {
-          "type": "image_url",
-          "image_url":  {
-                    "url": f"data:image/jpeg;base64,{frame_list[2]}"
+        act = None
+        while act not in ("A", "B", "UP", "DOWN", "LEFT", "RIGHT"):   
+          if act is not None:
+              print("LLM return unexpected act:", act)
+              print("Run another round") 
+          response = client.chat.completions.create(
+              model="gpt-4-turbo",
+              messages=[
+                {
+                  "role": "user",
+                  "content": [
+          {
+            "type": "text",
+            "text": "The following are the three sequential frames of the pokemon game, which button I should press next? Return me one of the six buttons. You will respond with JSON keys \"UP\", \"DOWN\", \"LEFT\", \"RIGHT\", and \"A\" and \"B\". ",
           },
-        },
-      ],
-    }
-  ],
-    max_tokens=300,
-)
-        res = response.choices[0].message.content.split('```json\n')[1].split('\n```')[0]  
-        res = json.loads(res)
-        act = next((button for button in ["A", "B", "UP", "DOWN", "LEFT", "RIGHT"] if button in res), None)
-        return act
+          {
+            "type": "image_url",
+            "image_url":  {
+                      "url": f"data:image/jpeg;base64,{frame_list[0]}"
+                  },
+          },
+          {
+            "type": "image_url",
+            "image_url":  {
+                      "url": f"data:image/jpeg;base64,{frame_list[1]}"
+                  },
+          },
+          {
+            "type": "image_url",
+            "image_url":  {
+                      "url": f"data:image/jpeg;base64,{frame_list[2]}"
+            },
+          },
+        ],
+      }
+    ],
+      max_tokens=300,
+  )
+          print('DEBUG: LLM return response', response)
+          res = response.choices[0].message.content.split('```json\n')[1].split('\n```')[0]  
+          res = json.loads(res)
+          act = next((button for button in ["A", "B", "UP", "DOWN", "LEFT", "RIGHT"] if button in res), None)
+        print('DEBUG: LLM return action', act)
+        act_ind = self.action_to_index[act]
+        
+        return self.pokenv.step(act_ind)
 
 
         # user_response = self.user_agent.step(assistant_msg)
