@@ -16,6 +16,12 @@ Train Agents to Play Werewolf
 </p> -->
 CamelGym provides environments to train LLM (Lange Language Model) based Agents. It is built upon multi-agent interaction framework [CAMEL](https://www.camel-ai.org). 
 
+## Environments
+
+|<img align="left" width="450" height="270" src="https://github.com/WuJunde/CamelGym/blob/main/poke_fig.png">|<img align="right" width="450" height="270" src="https://github.com/WuJunde/CamelGym/blob/main/werewolf_fig.png">|
+|:--:|:--:| 
+| **Pokemon-Red** | **Werewolf** |
+
  ## Preparation
 
  Install the environment:
