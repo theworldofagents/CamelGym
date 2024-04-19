@@ -53,6 +53,11 @@ python werewolf_game/start_game.py
 1. Copy your legally obtained Pokemon Red ROM into the base directory. You can find this using google, it should be 1MB. Rename it to `PokemonRed.gb` if it is not already. The sha1 sum should be `ea9bcae617fdf159b045185467ae58b2e4a48b9a`, which you can verify by running `shasum PokemonRed.gb`. 
 2. Move into the `baselines/` directory:  
  ```cd baselines```  
-3. Run:  
-```python run_pretrained_interactive.py```
+3. Export you OpenAI API:
+ ```bash
+export OPENAI_API_KEY=<insert your OpenAI API key>
+OPENAI_API_BASE_URL=<inert your OpenAI API BASE URL>  #(Should you utilize an OpenAI proxy service, kindly specify this)
+```
+4. Run:  
+```python ./pokemon/baselines/run_llm.py```
 
