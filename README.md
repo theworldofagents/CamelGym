@@ -14,7 +14,7 @@ Train Agents to Play Werewolf
         <img alt="Discord" src="https://img.shields.io/discord/1146610656779440188?logo=discord&style=flat&logoColor=white"/></a>
     <img src="https://img.shields.io/static/v1?label=license&message=GPL&color=white&style=flat" alt="License"/>
 </p> -->
-CamelGym provides environments to train LLM (Lange Language Model) based Agents. It is built upon multi-agent interaction framework [CAMEL](https://www.camel-ai.org). 
+CamelGym provides environments to train LLM (Lange Language Model) based Agents. It is built on the exceptional multi-agent interaction framework, [CAMEL](https://www.camel-ai.org). 
 
 ## Environments
 
@@ -30,9 +30,11 @@ Werewolf is a game where each player deceives the others while trying to hunt do
 It is also a reproduction of papers [Language Agents with Reinforcement Learning for Strategic Play in the Werewolf Game](https://openreview.net/pdf?id=N1gmpVd4iE) and [Exploring Large Language Models for Communication Games: An Empirical Study on Werewolf](https://arxiv.org/abs/2309.04658)
 
 ### Pokemon Red
-Language-Vision Model (like GPT-vision) plays Pokemon-Red (GameBoy Game)
+Language-Vision Model (LVM like GPT-vision) plays Pokemon-Red (GameBoy Game)
 
 We give the model some screenshots, and let it predicts which button to press next.
+
+Build on its [non-LVM traditional RL environment](https://github.com/PWhiddy/PokemonRedExperiments)
 
  ## Preparation
 
