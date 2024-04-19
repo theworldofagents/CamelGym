@@ -9,6 +9,7 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 from pathlib import Path
 import numpy as np
+import json
 
 client = OpenAI()
 
@@ -52,7 +53,7 @@ class PokeEnv(RolePlaying):
                 "content": [
         {
           "type": "text",
-          "text": "The following are the three sequential frames of the pokemon game, which button I should press next? Return me one of the six buttons. ",
+          "text": "The following are the three sequential frames of the pokemon game, which button I should press next? Return me one of the six buttons. You will respond with JSON keys \"UP\", \"DOWN\", \"LEFT\", \"RIGHT\", and \"A\" and \"B\". ",
         },
         {
           "type": "image_url",
@@ -77,7 +78,11 @@ class PokeEnv(RolePlaying):
   ],
     max_tokens=300,
 )
-        return response.choices[0]
+        res = response.choices[0].message.content.split('```json\n')[1].split('\n```')[0]  
+        res = json.loads(res)
+        act = next((button for button in ["A", "B", "UP", "DOWN", "LEFT", "RIGHT"] if button in res), None)
+        return act
+
 
         # user_response = self.user_agent.step(assistant_msg)
         # # if user_response.terminated or user_response.msgs is None:

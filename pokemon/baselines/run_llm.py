@@ -46,9 +46,9 @@ if __name__ == '__main__':
     num_cpu = 1 #64 #46  # Also sets the number of episodes per training iteration
     env = make_env(0, env_config)() #SubprocVecEnv([make_env(i, env_config) for i in range(num_cpu)])
 
-    task_prompt = "You are playing Pokemon Red on GameBoy, and your target is to clear the game. Next, I would give you a sequntial of its game screenshot, and you should return me the next button you should press. Three have six buttons you can press, which are UP, DOWN, LEFT, RIGHT, A and B. Consider you would press that button a very shot time, like 0.5 second. Return me one of the six buttons each time."
+    task_prompt = "You are playing Pokemon Red on GameBoy, and your target is to clear the game. Next, I would give you a sequntial of its game screenshot, and you should return me the next button you should press. Three have six buttons you can press, which are UP, DOWN, LEFT, RIGHT, A and B. Consider you would press that button a very shot time, like 0.5 second."
 
-    input_msg = "Return me one of the six buttons each time."
+    # input_msg = "Return me one of the six buttons each time."
 
     print(Fore.YELLOW + f"Original task prompt:\n{task_prompt}\n")
     poke_session = PokeEnv(env, assistant_role_name = "NotFilled", user_role_name = "Gamer", model_type = ModelType.GPT_4_TURBO, task_prompt=task_prompt)
@@ -57,6 +57,8 @@ if __name__ == '__main__':
     res = poke_session.step()
 
     print_text_animated(Fore.GREEN + "AI Response:\n\n"f"{res}\n")
+
+
         
     # #keyboard.on_press_key("M", toggle_agent)
     # obs, info = env.reset()
