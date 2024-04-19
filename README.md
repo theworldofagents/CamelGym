@@ -22,6 +22,18 @@ CamelGym provides environments to train LLM (Lange Language Model) based Agents.
 |:--:|:--:| 
 | **Pokemon-Red** | **Werewolf (social game)** |
 
+### Werewolf Game
+AI v.s. AI environment playing [Werewolf Game](https://playwerewolf.co/pages/rules#gameplay). 
+
+Werewolf is a game where each player deceives the others while trying to hunt down the werewolf before the whole village becomes food for the beast.
+
+It is also a reproduction of papers [Language Agents with Reinforcement Learning for Strategic Play in the Werewolf Game](https://openreview.net/pdf?id=N1gmpVd4iE) and [Exploring Large Language Models for Communication Games: An Empirical Study on Werewolf](https://arxiv.org/abs/2309.04658)
+
+### Pokemon Red
+Language-Vision Model (like GPT-vision) plays Pokemon-Red (GameBoy Game)
+
+We give the model some screenshots, and let it predicts which button to press next.
+
  ## Preparation
 
  Install the environment:
@@ -46,8 +58,6 @@ llm:
 ## Run
 
 ### Werewolf Game
-AI v.s. AI environment playing [Werewolf Game](https://playwerewolf.co/pages/rules#gameplay). 
-It is also a reproduction of papers [Language Agents with Reinforcement Learning for Strategic Play in the Werewolf Game](https://openreview.net/pdf?id=N1gmpVd4iE) and [Exploring Large Language Models for Communication Games: An Empirical Study on Werewolf](https://arxiv.org/abs/2309.04658)
 
 Start the game:
 ```bash
