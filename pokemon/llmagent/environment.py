@@ -63,6 +63,10 @@ class PokeEnv(RolePlaying):
             image_data = buffer.getvalue()
             frame_list.append(self.encode_image(image_data))
 
+        lv_rwd = self.pokenv.recent_memory[0, 0]
+        hp_rwd = self.pokenv.recent_memory[0, 1]
+        exp_rwd = self.pokenv.recent_memory[0, 2]
+
         # assistant_msg = BaseMessage.make_assistant_message(
         act = None
         while act not in ("A", "B", "UP", "DOWN", "LEFT", "RIGHT"):   
@@ -77,7 +81,7 @@ class PokeEnv(RolePlaying):
                   "content": [
           {
             "type": "text",
-            "text": "The following are the three sequential frames of the pokemon game, which button I should press next? Return me one of the six buttons. You will respond with JSON keys \"UP\", \"DOWN\", \"LEFT\", \"RIGHT\", and \"A\" and \"B\". ",
+            "text": "In this stage, your level award is: " + str(lv_rwd) + ". Your health reward is: " + str(hp_rwd) + ". Your explore reward is: " + str(exp_rwd) + ". If you find the rewards or game frames not change a lot, you should try pressing different buttons to proceed the progess of the game. The following are the three sequential frames of the pokemon game. Which button should press next? Return me one of the six buttons. You will respond with JSON keys \"UP\", \"DOWN\", \"LEFT\", \"RIGHT\", and \"A\" and \"B\". ",
           },
           {
             "type": "image_url",
