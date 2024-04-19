@@ -61,3 +61,5 @@ OPENAI_API_BASE_URL=<inert your OpenAI API BASE URL>  #(Should you utilize an Op
 4. Run:  
 ```python ./pokemon/baselines/run_llm.py```
 
+TODO: LLMs are now easily sticking to or repeating one scene, e.g. always pressing A to repeat a dialouge. It could be solved by a memory mechanism or random exploration strategy.
+
