@@ -80,5 +80,7 @@ OPENAI_API_BASE_URL=<inert your OpenAI API BASE URL>  #(Should you utilize an Op
 ```python ./pokemon/baselines/run_llm.py```
 
 TODO: LLMs are now easily sticking to or repeating one scene, e.g. always pressing A to repeat a dialouge. It could be solved by a memory mechanism or random exploration strategy.
+4-25 It escapes the repeating dialouge after adding memory, but now it is a little too diverse, trying different buttons with no clues. Introducint a reward mechanism might help.
+
 TODO: I should del blank screenshot
 
