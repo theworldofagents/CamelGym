@@ -55,9 +55,11 @@ if __name__ == '__main__':
     print(Fore.CYAN + f"Specified task prompt:\n{poke_session.task_prompt}\n")
 
     obs, info = poke_session.reset()
+    step_n = 0
     while True:
-        obs, rewards, terminated, truncated, info = poke_session.step()
+        obs, rewards, terminated, truncated, info = poke_session.step(n = step_n)
         poke_session.render()
+        step_n +=1 
         if truncated:
             break
     poke_session.close()

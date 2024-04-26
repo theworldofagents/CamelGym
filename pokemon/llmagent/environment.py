@@ -25,6 +25,7 @@ class PokeEnv(RolePlaying):
             dtype=np.uint8)
         self.memory = FixedFIFO(3)
         self.last_act = FixedFIFO(3)
+        self.press_time = 3
         
         self.action_to_index = {
             "DOWN": self.pokenv.valid_actions.index(WindowEvent.PRESS_ARROW_DOWN),
@@ -73,19 +74,17 @@ class PokeEnv(RolePlaying):
     def close(self):
         return self.pokenv.close()
     
-    def step(self):
+    def step(self, n = 0):
         frame_list = []
         self.recent_frames = np.roll(self.recent_frames, 1, axis=0)
         self.recent_frames[0] = self.pokenv.render(reduce_res=False)
+
         for i in range(self.pokenv.frame_stacks):
             img = self.recent_frames[i,...]
             img = Image.fromarray(img)
-            # plt.imsave(
-            #     self.pokenv.s_path / Path(f'recent_meme_{str(i)}.jpeg'), 
-            #     img)
-            # Convert the NumPy array to a PIL Imag
+            print('saving frames at:', str(self.pokenv.s_path ))
+            img.save(self.pokenv.s_path / Path(f'recent_meme_step_{str(n)}_frame_{str(i)}.jpeg'))
 
-            # Save the image to a bytes buffer instead of a file
             buffer = BytesIO()
             img.save(buffer, format="PNG")
             image_data = buffer.getvalue()
@@ -122,7 +121,7 @@ class PokeEnv(RolePlaying):
           {
             "type": "image_url",
             "image_url":  {
-                      "url": f"data:image/jpeg;base64,{frame_list[0]}"
+                      "url": f"data:image/jpeg;base64,{frame_list[2]}"
                   },
           },
           {
@@ -134,7 +133,7 @@ class PokeEnv(RolePlaying):
           {
             "type": "image_url",
             "image_url":  {
-                      "url": f"data:image/jpeg;base64,{frame_list[2]}"
+                      "url": f"data:image/jpeg;base64,{frame_list[0]}"
             },
           },
         ],
@@ -150,6 +149,9 @@ class PokeEnv(RolePlaying):
         print('DEBUG: LLM return action', act)
         self.last_act.push(act)
         act_ind = self.action_to_index[act]
+
+        for _ in range(self.press_time-1):
+            self.pokenv.step(act_ind)
         
         return self.pokenv.step(act_ind)
 
