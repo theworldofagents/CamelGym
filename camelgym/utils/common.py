@@ -46,15 +46,16 @@ class FixedFIFO:
             return 'No Memory Exist'  # Index out of bounds
         return self.queue[index]
 
+    def get_all(self):
+        """Concatenate all items in the queue into a single string."""
+        return ''.join(str(item) for item in self.queue)
+
     def __repr__(self):
         return repr(self.queue)
 
 
 def check_cmd_exists(command) -> int:
-    """检查命令是否存在
-    :param command: 待检查的命令
-    :return: 如果命令存在，返回0，如果不存在，返回非0
-    """
+
     if platform.system().lower() == "windows":
         check_command = "where " + command
     else:
