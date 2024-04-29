@@ -85,3 +85,7 @@ TODO: LLMs are now easily sticking to or repeating one scene, e.g. always pressi
 
 4-27 I find it escaped the dialouge loop maybe bc of the added randomness (e.g., ask it not to produce repeated actions if it finds itself in a loop). I tried to add the reflection mechanism to it, it produced very correct reflections, but it not works on escaping the repeat or finding the rightway out the house. I find it has a gap between its plan, like to go outside the house and capture more pokemons and its detailed implementations, like which button should press next. I think I may need to introduce more RL in it to do these detailed operations, and let LVM to make the plan (like reward).
 
+
+## TODO Env
+1. robotic simulator
+2. cell 
