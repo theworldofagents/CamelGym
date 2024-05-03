@@ -14,9 +14,12 @@ from camelgym.utils.common import FixedFIFO
 from pyboy.utils import WindowEvent
 
 client = OpenAI()
+MODEL_ENGINE = "gpt-4-turbo"
+USERNAME = "user"
+AI_NAME = "assistant"
 
 class PokeEnv(RolePlaying):
-    def __init__(self, env, *args, **kwargs):
+    def __init__(self, env, prompt, *args, **kwargs):
         super().__init__(*args, **kwargs)  # Pass all parent-required parameters concisely
         self.pokenv = env
         self.recent_frames = np.zeros(
@@ -26,6 +29,7 @@ class PokeEnv(RolePlaying):
         self.memory = FixedFIFO(15)
         self.last_act = FixedFIFO(3)
         self.press_time = 2
+        self.init_prompt = prompt
         
         self.action_to_index = {
             "DOWN": self.pokenv.valid_actions.index(WindowEvent.PRESS_ARROW_DOWN),
@@ -75,11 +79,49 @@ class PokeEnv(RolePlaying):
     
     def close(self):
         return self.pokenv.close()
+
+    def get_response(self, prompt):
+        """Returns the response for the given prompt using the OpenAI API."""
+        completions = client.chat.completions.create(
+                engine = MODEL_ENGINE,
+                messages = prompt,
+            max_tokens = 300,
+        )
+        return completions.choices[0].message.content
+
+    def handle_input(self,
+                  input_msg : str,
+        conversation_history : list,
+                    USERNAME : str,
+                    AI_NAME : str,
+                    ):
+        """Updates the conversation history and generates a response using GPT."""
+        # Update the conversation history
+        conversation_history.append({
+            "role": USERNAME,
+            "content": [input_msg]
+        })
+      
+        # Generate a response using GPT-3
+        message = self.get_response(conversation_history)
+
+        conversation_history.append({
+            "role": AI_NAME,
+            "content": [message]
+        })
+
+        # Print the response
+        print(f'{AI_NAME}: {message}')
+        
+        return conversation_history
+
     
     def step(self, n = 0):
         frame_list = []
         self.recent_frames = np.roll(self.recent_frames, 1, axis=0)
         self.recent_frames[0] = self.pokenv.render(reduce_res=False)
+
+        conversation_history = self.init_prompt + "\n"
 
         print('saving frames at:', str(self.pokenv.s_path ))
         for i in range(self.pokenv.frame_stacks):
@@ -105,6 +147,12 @@ class PokeEnv(RolePlaying):
               print("Run another round") 
           # print("DEBUG: the prompt is: Your current state of the game is: " + str(self.memory.get_item(0)) + "." + "Your last action is: " + str(self.last_act.get_item(0)) + '.')
           # print("DEBUG: memory in prompt is: " + str(self.memory.get_all()))
+        # Get the user's input
+        user_input = input(f"{USERNAME}: ")
+
+        # Handle the input
+        handle_input(user_input, conversation_history, USERNAME, AI_NAME)
+
           response = client.chat.completions.create(
               model="gpt-4-turbo",
               messages=[
