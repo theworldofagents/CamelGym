@@ -39,8 +39,8 @@ class PokeEnv(RolePlaying):
             "A": self.pokenv.valid_actions.index(WindowEvent.PRESS_BUTTON_A),
             "B": self.pokenv.valid_actions.index(WindowEvent.PRESS_BUTTON_B),
         }
-        self.history = [self.init_prompt + "\n"]
-        init_res = self.handle_input(" ", self.history, 'system', AI_NAME)
+        self.history = []
+        init_res = self.handle_input(prompt, self.history, 'system', AI_NAME)
         print('DEBUG: LLM init response:', init_res)
 
     # Function to encode the image
@@ -86,11 +86,19 @@ class PokeEnv(RolePlaying):
     def get_response(self, prompt):
         """Returns the response for the given prompt using the OpenAI API."""
         completions = client.chat.completions.create(
-                engine = MODEL_ENGINE,
+                model = MODEL_ENGINE,
                 messages = prompt,
             max_tokens = 300,
         )
         return completions.choices[0].message.content
+
+    def content_wrap(self, content, type = 'text'):
+        return [
+            {
+              "type": type,
+              "text": content,
+            }
+        ]
 
     def handle_input(self,
                   input_msg : str,
@@ -100,9 +108,10 @@ class PokeEnv(RolePlaying):
                     ):
         """Updates the conversation history and generates a response using GPT."""
         # Update the conversation history
+
         conversation_history.append({
             "role": USERNAME,
-            "content": [input_msg]
+            "content": self.content_wrap(input_msg)
         })
       
         # Generate a response using GPT-3
@@ -110,7 +119,7 @@ class PokeEnv(RolePlaying):
 
         conversation_history.append({
             "role": AI_NAME,
-            "content": [message]
+            "content": self.content_wrap(message)
         })
 
         # Print the response
@@ -162,7 +171,6 @@ class PokeEnv(RolePlaying):
             #"If your actions did not change the game states a lot, you should try different actions from your previous ones." + 
             # "Your previous reflection of the game is: " + str(self.reflection()) 
             # "Your last three actions are: 1." + str(self.last_act.get_item(0)) + "." + "2." + str(self.last_act.get_item(1)) + "." + "3." + str(self.last_act.get_item(2)) + "."
-            ,
           },
           # {
           #   "type": "image_url",
@@ -195,8 +203,8 @@ class PokeEnv(RolePlaying):
         self.last_act.push(act)
         act_ind = self.action_to_index[act]
 
-        # for _ in range(self.press_time-1):
-        #     self.pokenv.step(act_ind)
+        for _ in range(self.press_time):
+            self.pokenv.step(act_ind)
         
         return self.pokenv.step(act_ind)
 

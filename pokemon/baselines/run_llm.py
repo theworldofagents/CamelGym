@@ -54,7 +54,7 @@ if __name__ == '__main__':
     # input_msg = "Return me one of the six buttons each time."
 
     print(Fore.YELLOW + f"Original task prompt:\n{task_prompt}\n")
-    poke_session = PokeEnv(env, task_prompt)
+    poke_session = PokeEnv(env, task_prompt, assistant_role_name = 'assistant', user_role_name = 'user')
     print(Fore.CYAN + f"Specified task prompt:\n{poke_session.task_prompt}\n")
 
     obs, info = poke_session.reset()
