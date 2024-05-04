@@ -46,12 +46,15 @@ if __name__ == '__main__':
     num_cpu = 1 #64 #46  # Also sets the number of episodes per training iteration
     env = make_env(0, env_config)() #SubprocVecEnv([make_env(i, env_config) for i in range(num_cpu)])
 
-    task_prompt = "You are playing Pokemon Red on GameBoy, and your target is to clear the game. Next, I would give you a sequntial of its game screenshot, and you should return me the next button you should press. Three have six buttons you can press, which are UP, DOWN, LEFT, RIGHT, A and B. Consider you would press that button a very shot time, like 0.5 second. After you press a button, we would return you three reward values respectively indicate pokemons' levels, pokemons' health, and the explore progress of the game. Your actions are supposed to maximize these reward values."
+    task_prompt = "You are playing Pokemon Red on GameBoy, and your target is to clear the game. Next, I would give you a sequntial of its game screenshot, and you should return me the next button you should press. Three have six buttons you can press, which are UP, DOWN, LEFT, RIGHT, A and B." + \
+    "You will respond with one JSON Key \"UP\", \"DOWN\", \"LEFT\", \"RIGHT\", \"A\", \"B\", with the value as its probability on a scale of 0-1? " + \
+    "For example: if you have 0.8 probabiligy of pressing \"LEFT\", you would return {\"LEFT\": 0.8}."
+    #"After you press a button, we would return you three reward values respectively indicate pokemons' levels, pokemons' health, and the explore progress of the game. Your actions are supposed to maximize these reward values."
 
     # input_msg = "Return me one of the six buttons each time."
 
     print(Fore.YELLOW + f"Original task prompt:\n{task_prompt}\n")
-    poke_session = PokeEnv(env, assistant_role_name = "NotFilled", user_role_name = "Gamer", model_type = ModelType.GPT_4_TURBO, task_prompt=task_prompt)
+    poke_session = PokeEnv(env, task_prompt)
     print(Fore.CYAN + f"Specified task prompt:\n{poke_session.task_prompt}\n")
 
     obs, info = poke_session.reset()

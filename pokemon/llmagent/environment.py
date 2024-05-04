@@ -39,6 +39,9 @@ class PokeEnv(RolePlaying):
             "A": self.pokenv.valid_actions.index(WindowEvent.PRESS_BUTTON_A),
             "B": self.pokenv.valid_actions.index(WindowEvent.PRESS_BUTTON_B),
         }
+        self.history = [self.init_prompt + "\n"]
+        init_res = self.handle_input(" ", self.history, 'system', AI_NAME)
+        print('DEBUG: LLM init response:', init_res)
 
     # Function to encode the image
     def encode_image(self, image):
@@ -111,17 +114,15 @@ class PokeEnv(RolePlaying):
         })
 
         # Print the response
-        print(f'{AI_NAME}: {message}')
+        # print(f'{AI_NAME}: {message}')
         
-        return conversation_history
+        return message
 
     
     def step(self, n = 0):
         frame_list = []
         self.recent_frames = np.roll(self.recent_frames, 1, axis=0)
         self.recent_frames[0] = self.pokenv.render(reduce_res=False)
-
-        conversation_history = self.init_prompt + "\n"
 
         print('saving frames at:', str(self.pokenv.s_path ))
         for i in range(self.pokenv.frame_stacks):
@@ -147,29 +148,19 @@ class PokeEnv(RolePlaying):
               print("Run another round") 
           # print("DEBUG: the prompt is: Your current state of the game is: " + str(self.memory.get_item(0)) + "." + "Your last action is: " + str(self.last_act.get_item(0)) + '.')
           # print("DEBUG: memory in prompt is: " + str(self.memory.get_all()))
-        # Get the user's input
-        user_input = input(f"{USERNAME}: ")
 
-        # Handle the input
-        handle_input(user_input, conversation_history, USERNAME, AI_NAME)
-
-          response = client.chat.completions.create(
-              model="gpt-4-turbo",
-              messages=[
-                {
-                  "role": "user",
-                  "content": [
-          {
+          # Get the user's input
+          user_input = [{
             "type": "text",
             # "text": "In this stage, your level award is: " + str(lv_rwd) + ". Your health reward is: " + str(hp_rwd) + ". Your explore reward is: " + str(exp_rwd) + ". If you find the rewards or game frames not change a lot, you should try pressing different buttons to proceed the progess of the game. 
             "text": 
-            "You are playing Pokemon Red on GameBoy, and your goal is to explore more of the game. Next, I would give you a sequntial of its game screenshot, and you should return me the next button you should press. Three have six buttons you can press, which are UP, DOWN, LEFT, RIGHT, A and B. Consider you would press that button a very shot time, like 0.5 second. " +
+            # "You are playing Pokemon Red on GameBoy, and your goal is to explore more of the game. Next, I would give you a sequntial of its game screenshot, and you should return me the next button you should press. Three have six buttons you can press, which are UP, DOWN, LEFT, RIGHT, A and B. Consider you would press that button a very shot time, like 0.5 second. " +
             # "After you press a button, we would return you three reward values respectively indicate pokemons' levels, pokemons' health, and the explore progress of the game. Your actions are supposed to maximize these reward values." +
             # "The following are the three sequential frames of the pokemon game. The last one is the current frame, and that is what you should exceptionally focus on. Which button should press next? Return me one of the six buttons. You will respond with JSON keys \"UP\", \"DOWN\", \"LEFT\", \"RIGHT\", and \"A\" and \"B\". " +
-            "The following is the current frame. Which button should press next? Return me one of the six buttons. You will respond with JSON keys \"UP\", \"DOWN\", \"LEFT\", \"RIGHT\", and \"A\" and \"B\". " +
-            "Your decision should consider your previous game experiences." +
+            "The following is the current frame. Which button should press next? and with how much probability? Return a JSON array as the result." 
+            # "Your decision should consider your previous game experiences." +
             #"If your actions did not change the game states a lot, you should try different actions from your previous ones." + 
-            "Your previous reflection of the game is: " + str(self.reflection()) 
+            # "Your previous reflection of the game is: " + str(self.reflection()) 
             # "Your last three actions are: 1." + str(self.last_act.get_item(0)) + "." + "2." + str(self.last_act.get_item(1)) + "." + "3." + str(self.last_act.get_item(2)) + "."
             ,
           },
@@ -190,16 +181,13 @@ class PokeEnv(RolePlaying):
             "image_url":  {
                       "url": f"data:image/jpeg;base64,{frame_list[0]}"
             },
-          },
-        ],
-      }
-    ],
-      max_tokens=300,
-  )
-          res_msg = response.choices[0].message.content
+          }]
+
+          # Handle the input
+          res_msg = self.handle_input(user_input, self.history, USERNAME, AI_NAME)
           print('DEBUG: LLM return response:', res_msg)
           # self.reflection(response.choices[0].message.content)
-          self.add_memory(f'On step {str(n)}, you return the reasoning and action as follow: {str(res_msg)}' )
+          # self.add_memory(f'On step {str(n)}, you return the reasoning and action as follow: {str(res_msg)}' )
           res = res_msg.split('```json\n')[1].split('\n```')[0]  
           res = json.loads(res)
           act = next((button for button in ["A", "B", "UP", "DOWN", "LEFT", "RIGHT"] if button in res), None)
