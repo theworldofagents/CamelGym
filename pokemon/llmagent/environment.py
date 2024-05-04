@@ -96,7 +96,7 @@ class PokeEnv(RolePlaying):
         return [
             {
               "type": type,
-              "text": content,
+              type: content,
             }
         ]
 
@@ -150,6 +150,17 @@ class PokeEnv(RolePlaying):
 
         # assistant_msg = BaseMessage.make_assistant_message(
         act = None
+        main_prompt =  "The following is the current frame. Which button should press next? and with how much probability? Return a JSON array as the result."        
+           # "text": "In this stage, your level award is: " + str(lv_rwd) + ". Your health reward is: " + str(hp_rwd) + ". Your explore reward is: " + str(exp_rwd) + ". If you find the rewards or game frames not change a lot, you should try pressing different buttons to proceed the progess of the game. 
+            # "You are playing Pokemon Red on GameBoy, and your goal is to explore more of the game. Next, I would give you a sequntial of its game screenshot, and you should return me the next button you should press. Three have six buttons you can press, which are UP, DOWN, LEFT, RIGHT, A and B. Consider you would press that button a very shot time, like 0.5 second. " +
+            # "After you press a button, we would return you three reward values respectively indicate pokemons' levels, pokemons' health, and the explore progress of the game. Your actions are supposed to maximize these reward values." +
+            # "The following are the three sequential frames of the pokemon game. The last one is the current frame, and that is what you should exceptionally focus on. Which button should press next? Return me one of the six buttons. You will respond with JSON keys \"UP\", \"DOWN\", \"LEFT\", \"RIGHT\", and \"A\" and \"B\". " +
+            #"The following is the current frame. Which button should press next? and with how much probability? Return a JSON array as the result." 
+            # "Your decision should consider your previous game experiences." +
+            #"If your actions did not change the game states a lot, you should try different actions from your previous ones." + 
+            # "Your previous reflection of the game is: " + str(self.reflection()) 
+            # "Your last three actions are: 1." + str(self.last_act.get_item(0)) + "." + "2." + str(self.last_act.get_item(1)) + "." + "3." + str(self.last_act.get_item(2)) + "."
+
         while act not in ("A", "B", "UP", "DOWN", "LEFT", "RIGHT"):   
 
           if act is not None:
@@ -157,21 +168,13 @@ class PokeEnv(RolePlaying):
               print("Run another round") 
           # print("DEBUG: the prompt is: Your current state of the game is: " + str(self.memory.get_item(0)) + "." + "Your last action is: " + str(self.last_act.get_item(0)) + '.')
           # print("DEBUG: memory in prompt is: " + str(self.memory.get_all()))
+          img = {
+                      "url": f"data:image/jpeg;base64,{frame_list[0]}"
+            }
 
           # Get the user's input
-          user_input = [{
-            "type": "text",
-            # "text": "In this stage, your level award is: " + str(lv_rwd) + ". Your health reward is: " + str(hp_rwd) + ". Your explore reward is: " + str(exp_rwd) + ". If you find the rewards or game frames not change a lot, you should try pressing different buttons to proceed the progess of the game. 
-            "text": 
-            # "You are playing Pokemon Red on GameBoy, and your goal is to explore more of the game. Next, I would give you a sequntial of its game screenshot, and you should return me the next button you should press. Three have six buttons you can press, which are UP, DOWN, LEFT, RIGHT, A and B. Consider you would press that button a very shot time, like 0.5 second. " +
-            # "After you press a button, we would return you three reward values respectively indicate pokemons' levels, pokemons' health, and the explore progress of the game. Your actions are supposed to maximize these reward values." +
-            # "The following are the three sequential frames of the pokemon game. The last one is the current frame, and that is what you should exceptionally focus on. Which button should press next? Return me one of the six buttons. You will respond with JSON keys \"UP\", \"DOWN\", \"LEFT\", \"RIGHT\", and \"A\" and \"B\". " +
-            "The following is the current frame. Which button should press next? and with how much probability? Return a JSON array as the result." 
-            # "Your decision should consider your previous game experiences." +
-            #"If your actions did not change the game states a lot, you should try different actions from your previous ones." + 
-            # "Your previous reflection of the game is: " + str(self.reflection()) 
-            # "Your last three actions are: 1." + str(self.last_act.get_item(0)) + "." + "2." + str(self.last_act.get_item(1)) + "." + "3." + str(self.last_act.get_item(2)) + "."
-          },
+          user_input = self.content_wrap(main_prompt) + self.content_wrap(img, type = "image_url")
+          
           # {
           #   "type": "image_url",
           #   "image_url":  {
@@ -184,12 +187,6 @@ class PokeEnv(RolePlaying):
           #             "url": f"data:image/jpeg;base64,{frame_list[1]}"
           #         },
           # },
-          {
-            "type": "image_url",
-            "image_url":  {
-                      "url": f"data:image/jpeg;base64,{frame_list[0]}"
-            },
-          }]
 
           # Handle the input
           res_msg = self.handle_input(user_input, self.history, USERNAME, AI_NAME)
