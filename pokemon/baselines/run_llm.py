@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     print(Fore.YELLOW + f"Original task prompt:\n{task_prompt}\n")
     poke_session = PokeEnv(env, task_prompt, assistant_role_name = 'assistant', user_role_name = 'user')
-    print(Fore.CYAN + f"Specified task prompt:\n{poke_session.task_prompt}\n")
+    # print(Fore.CYAN + f"Specified task prompt:\n{poke_session.task_prompt}\n")
 
     obs, info = poke_session.reset()
     step_n = 0

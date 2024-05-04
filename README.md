@@ -79,11 +79,7 @@ OPENAI_API_BASE_URL=<inert your OpenAI API BASE URL>  #(Should you utilize an Op
 4. Run:  
 ```python ./pokemon/baselines/run_llm.py```
 
-TODO: LLMs are now easily sticking to or repeating one scene, e.g. always pressing A to repeat a dialouge. It could be solved by a memory mechanism or random exploration strategy.
-
-4-25 It escapes the repeating dialouge after adding memory, but now it is a little too diverse, trying different buttons with no clues. Introducint a reward mechanism might help.
-
-4-27 I find it escaped the dialouge loop maybe bc of the added randomness (e.g., ask it not to produce repeated actions if it finds itself in a loop). I tried to add the reflection mechanism to it, it produced very correct reflections, but it not works on escaping the repeat or finding the rightway out the house. I find it has a gap between its plan, like to go outside the house and capture more pokemons and its detailed implementations, like which button should press next. I think I may need to introduce more RL in it to do these detailed operations, and let LVM to make the plan (like reward).
+Now I simply append all history message as input to gpt, so it would reach the GPT limitation after few iterations.
 
 
 ## TODO Env

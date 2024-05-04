@@ -29,7 +29,6 @@ class PokeEnv(RolePlaying):
         self.memory = FixedFIFO(15)
         self.last_act = FixedFIFO(3)
         self.press_time = 2
-        self.init_prompt = prompt
         
         self.action_to_index = {
             "DOWN": self.pokenv.valid_actions.index(WindowEvent.PRESS_ARROW_DOWN),
@@ -40,7 +39,7 @@ class PokeEnv(RolePlaying):
             "B": self.pokenv.valid_actions.index(WindowEvent.PRESS_BUTTON_B),
         }
         self.history = []
-        init_res = self.handle_input(prompt, self.history, 'system', AI_NAME)
+        init_res = self.handle_input(self.content_wrap(prompt), self.history, 'system', AI_NAME)
         print('DEBUG: LLM init response:', init_res)
 
     # Function to encode the image
@@ -101,17 +100,18 @@ class PokeEnv(RolePlaying):
         ]
 
     def handle_input(self,
-                  input_msg : str,
+                  input_msg,
         conversation_history : list,
                     USERNAME : str,
                     AI_NAME : str,
                     ):
+        """input_msg is a wrapped content"""
         """Updates the conversation history and generates a response using GPT."""
         # Update the conversation history
 
         conversation_history.append({
             "role": USERNAME,
-            "content": self.content_wrap(input_msg)
+            "content": input_msg
         })
       
         # Generate a response using GPT-3
@@ -200,8 +200,8 @@ class PokeEnv(RolePlaying):
         self.last_act.push(act)
         act_ind = self.action_to_index[act]
 
-        for _ in range(self.press_time):
-            self.pokenv.step(act_ind)
+        # for _ in range(self.press_time):
+        #     self.pokenv.step(act_ind)
         
         return self.pokenv.step(act_ind)
 
