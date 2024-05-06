@@ -478,6 +478,9 @@ class RedGymEnv(Env):
                 self.total_healing_rew += heal_amount * 4
             else:
                 self.died_count += 1
+
+    def update_lvm_reward(self):
+        
                 
     def get_all_events_reward(self):
         # adds up all event flags, exclude museum ticket
