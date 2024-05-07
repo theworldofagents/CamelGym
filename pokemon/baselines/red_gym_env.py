@@ -391,6 +391,10 @@ class RedGymEnv(Env):
             done = self.step_count >= self.max_steps
         #done = self.read_hp_fraction() == 0
         return done
+    
+    def save_state(self):
+        with open("state_file.state", "wb") as f:
+            self.pyboy.save_state(f)
 
     def save_and_print_info(self, done, obs_memory):
         if self.print_rewards:
@@ -480,7 +484,7 @@ class RedGymEnv(Env):
                 self.died_count += 1
 
     def update_lvm_reward(self):
-        
+        pass
                 
     def get_all_events_reward(self):
         # adds up all event flags, exclude museum ticket

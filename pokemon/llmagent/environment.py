@@ -150,7 +150,7 @@ class PokeEnv(RolePlaying):
 
         # assistant_msg = BaseMessage.make_assistant_message(
         act = None
-        main_prompt =  "The following is the current frame. Which button should press next? and with how much probability? Return a JSON array as the result."        
+        main_prompt =  "Your current goal is to get out of the room. The following is the current frame. Which button should press next? and with how much probability? Return a JSON array as the result."        
            # "text": "In this stage, your level award is: " + str(lv_rwd) + ". Your health reward is: " + str(hp_rwd) + ". Your explore reward is: " + str(exp_rwd) + ". If you find the rewards or game frames not change a lot, you should try pressing different buttons to proceed the progess of the game. 
             # "You are playing Pokemon Red on GameBoy, and your goal is to explore more of the game. Next, I would give you a sequntial of its game screenshot, and you should return me the next button you should press. Three have six buttons you can press, which are UP, DOWN, LEFT, RIGHT, A and B. Consider you would press that button a very shot time, like 0.5 second. " +
             # "After you press a button, we would return you three reward values respectively indicate pokemons' levels, pokemons' health, and the explore progress of the game. Your actions are supposed to maximize these reward values." +
