@@ -50,6 +50,7 @@ class RedGymEnv(Env):
         self.instance_id = str(uuid.uuid4())[:8] if 'instance_id' not in config else config['instance_id']
         self.s_path.mkdir(exist_ok=True)
         self.reset_count = 0
+        self.goal_reward = 0
         self.all_runs = []
 
         # Set this in SOME subclasses
