@@ -61,13 +61,12 @@ def reward_complete_compare(model, state, goal, input, history = []):
         
         # Handle the input
         res_msg = handle_input(client, model, user_input, history, "user", "assistant")
-        print('DEBUG: LLM return response:', res_msg)
+        print('DEBUG in reward_complete_compare: LLM return response:', res_msg)
 
         res_json = json_parser(res_msg)
         rate = next((button for button in ["much worse", "worse", "nearly the same", "better", "much better", "completed"] if button in res_json), None)
-
-        print('DEBUG: LLM return action', rate)
-
+        print('DEBUG in reward_complete_compare: LLM return rate', rate)
+        
         value = rate_to_index[rate]
         
         return value
