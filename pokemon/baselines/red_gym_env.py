@@ -19,6 +19,7 @@ import pandas as pd
 from gymnasium import Env, spaces
 from pyboy.utils import WindowEvent
 from memory_addresses import *
+from llmagent.function import reward_complete_compare 
 
 class RedGymEnv(Env):
 
@@ -50,8 +51,12 @@ class RedGymEnv(Env):
         self.instance_id = str(uuid.uuid4())[:8] if 'instance_id' not in config else config['instance_id']
         self.s_path.mkdir(exist_ok=True)
         self.reset_count = 0
-        self.goal_reward = 0
         self.all_runs = []
+
+        self.goal_reward = 0
+        self.lvm_compare_reward_count = 0
+        self.lvm_compare_reward_history = []
+
 
         # Set this in SOME subclasses
         self.metadata = {"render.modes": []}
@@ -485,7 +490,14 @@ class RedGymEnv(Env):
                 self.died_count += 1
 
     def update_lvm_reward(self):
-        pass
+        if self.lvm_compare_reward_count == 0:
+            state = 'init'
+        else:
+            state = 'consume'
+
+        reward_value = reward_complete_compare("gpt-4-turbo", state, "get out of the room", history=self.lvm_compare_reward_history)
+
+        state += 1
                 
     def get_all_events_reward(self):
         # adds up all event flags, exclude museum ticket
