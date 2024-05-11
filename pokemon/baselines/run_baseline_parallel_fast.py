@@ -1,3 +1,4 @@
+import os
 from os.path import exists
 from pathlib import Path
 import uuid
@@ -8,6 +9,9 @@ from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.callbacks import CheckpointCallback, CallbackList
 from tensorboard_callback import TensorboardCallback
+
+current_path = os.getcwd()
+parent_path = os.path.abspath(os.path.join(current_path, os.pardir))
 
 def make_env(rank, env_conf, seed=0):
     """
@@ -33,16 +37,17 @@ if __name__ == '__main__':
 
     env_config = {
                 'headless': True, 'save_final_state': True, 'early_stop': False,
-                'action_freq': 24, 'init_state': '../has_pokedex_nballs.state', 'max_steps': ep_length, 
+                'action_freq': 24, 'init_state': os.path.join(current_path, 'pokemon', 'has_pokedex_nballs.state'), 'max_steps': ep_length, 
                 'print_rewards': True, 'save_video': False, 'fast_video': True, 'session_path': sess_path,
-                'gb_path': '../PokemonRed.gb', 'debug': False, 'sim_frame_dist': 2_000_000.0, 
+                'gb_path': os.path.join(current_path, 'pokemon', 'PokemonRed.gb'), 'debug': False, 'sim_frame_dist': 2_000_000.0, 
                 'use_screen_explore': True, 'reward_scale': 4, 'extra_buttons': False,
                 'explore_weight': 3 # 2.5
             }
     
     print(env_config)
     
-    num_cpu = 16  # Also sets the number of episodes per training iteration
+    # num_cpu = 16  # Also sets the number of episodes per training iteration
+    num_cpu = 1  # Also sets the number of episodes per training iteration
     env = SubprocVecEnv([make_env(i, env_config) for i in range(num_cpu)])
     
     checkpoint_callback = CheckpointCallback(save_freq=ep_length, save_path=sess_path,

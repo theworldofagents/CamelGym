@@ -19,7 +19,23 @@ import pandas as pd
 from gymnasium import Env, spaces
 from pyboy.utils import WindowEvent
 from memory_addresses import *
-from llmagent.function import reward_complete_compare 
+from contextlib import contextmanager
+
+@contextmanager
+def add_path(path):
+    """Temporarily add a path to sys.path"""
+    original_sys_path = sys.path[:]
+    sys.path.append(path)
+    try:
+        yield
+    finally:
+        sys.path = original_sys_path
+
+# Path to the parent directory
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+with add_path(parent_dir):
+    from llmagent.function import reward_complete_compare 
 
 class RedGymEnv(Env):
 
@@ -383,11 +399,12 @@ class RedGymEnv(Env):
             memory[col, row] = last_pixel * (255 // col_steps)
             return memory
         
-        level, hp, explore = self.group_rewards()
+        level, hp, explore, task = self.group_rewards()
         full_memory = np.stack((
             make_reward_channel(level),
             make_reward_channel(hp),
-            make_reward_channel(explore)
+            make_reward_channel(explore),
+            make_reward_channel(task)
         ), axis=-1)
         
         if self.get_badges() > 0:

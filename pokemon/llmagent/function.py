@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 import json
 from camelgym.utils.common import FixedFIFO
-from utils import encode_img, content_wrap, handle_input, json_parser
+from .utils import encode_img, content_wrap, handle_input, json_parser
 
 def reward_complete_compare(model, state, goal, input, history = []):
         '''
@@ -66,7 +66,7 @@ def reward_complete_compare(model, state, goal, input, history = []):
         res_json = json_parser(res_msg)
         rate = next((button for button in ["much worse", "worse", "nearly the same", "better", "much better", "completed"] if button in res_json), None)
         print('DEBUG in reward_complete_compare: LLM return rate', rate)
-        
+
         value = rate_to_index[rate]
         
         return value
