@@ -50,7 +50,10 @@ def reward_complete_compare(model, state, goal, input, history = []):
 
                         much better: Comparing to the last frame, the player turned into a state much more favorable to complete the task. For example, in the last frame, there has no clear relations between the task and the current state, and it is unknown what actions to take for completing the task. But in this frame, there has strong relations between the task and the current state. The players could achieve the task through some feasible actions. Or in the last frame, the player needs very complex actions to complete the task, but in this frame, the player only needs very clear and specific actions to complete the task. 
 
-                        completed: Considering the current state, there may no relations between the task and the current state. The player has completed the task. The current state is likely what happened after completing this task. Never return this if the player has not completely done the task, even it is very very close to achieve the task."""
+                        completed: Considering the current state, there may no relations between the task and the current state. The player has completed the task. The current state is likely what happened after completing this task. Never return this if the player has not completely done the task, even it is very very close to achieve the task.
+                        
+                        Return a JSON array as the result. One of the five options should be the key, and the value should be the probability (0-1) of this result. For example: \{ "nearly the same": 0.8 \}
+                        """
 
         img = {
                     "url": f"data:image/jpeg;base64,{img}"
@@ -60,10 +63,15 @@ def reward_complete_compare(model, state, goal, input, history = []):
         user_input = content_wrap(prompt) + content_wrap(img, type = "image_url")
         
         # Handle the input
-        res_msg = handle_input(client, model, user_input, history, "user", "assistant")
+        res_msg = handle_input(user_input, client, model, history, "user", "assistant")
         print('DEBUG in reward_complete_compare: LLM return response:', res_msg)
 
+        if state == 'init':
+              return 0
+
         res_json = json_parser(res_msg)
+        print('DEBUG in reward_complete_compare: json parser:', res_json)
+
         rate = next((button for button in ["much worse", "worse", "nearly the same", "better", "much better", "completed"] if button in res_json), None)
         print('DEBUG in reward_complete_compare: LLM return rate', rate)
 

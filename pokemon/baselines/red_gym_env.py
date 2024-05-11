@@ -148,7 +148,7 @@ class RedGymEnv(Env):
         else:
             self.init_map_mem()
 
-        self.recent_memory = np.zeros((self.output_shape[1]*self.memory_height, 4), dtype=np.uint8)
+        self.recent_memory = np.zeros((self.output_shape[1]*self.memory_height, 3), dtype=np.uint8)
         
         self.recent_frames = np.zeros(
             (self.frame_stacks, self.output_shape[0], 
@@ -243,14 +243,13 @@ class RedGymEnv(Env):
         self.last_health = self.read_hp_fraction()
 
         # shift over short term reward memory
-        self.recent_memory = np.roll(self.recent_memory, 4)
+        self.recent_memory = np.roll(self.recent_memory, 3)
         self.recent_memory[0, 0] = min(new_prog[0] * 64, 255)
         self.recent_memory[0, 1] = min(new_prog[1] * 64, 255)
-        self.recent_memory[0, 2] = min(new_prog[2] * 128, 255)
-        self.recent_memory[0, 3] = min(new_prog[3] * 64, 255)
+        self.recent_memory[0, 2] = min( (new_prog[2] + new_prog[3]) / 2  * 128, 255)
 
         '''DEBUG'''
-        print("In this stage, your level award is: " + str(self.recent_memory[0, 0]) + ". Your health reward is: " + str(self.recent_memory[0, 1]) + ". Your explore reward is: " + str(self.recent_memory[0, 2])  + ". Your LVM task reward is: " + str(self.recent_memory[0, 3]) + ". ")
+        print("In this stage, your level award is: " + str(new_prog[0]) + ". Your health reward is: " + str(new_prog[1]) + ". Your explore reward is: " + str(new_prog[2])  + ". Your LVM task reward is: " + str(new_prog[3]) + ". ")
 
 
         step_limit_reached = self.check_if_done()
@@ -403,8 +402,7 @@ class RedGymEnv(Env):
         full_memory = np.stack((
             make_reward_channel(level),
             make_reward_channel(hp),
-            make_reward_channel(explore),
-            make_reward_channel(task)
+            make_reward_channel(explore) + make_reward_channel(task),
         ), axis=-1)
         
         if self.get_badges() > 0:
