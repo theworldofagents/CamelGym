@@ -132,7 +132,7 @@ class RedGymEnv(Env):
         else:
             self.init_map_mem()
 
-        self.recent_memory = np.zeros((self.output_shape[1]*self.memory_height, 3), dtype=np.uint8)
+        self.recent_memory = np.zeros((self.output_shape[1]*self.memory_height, 4), dtype=np.uint8)
         
         self.recent_frames = np.zeros(
             (self.frame_stacks, self.output_shape[0], 
@@ -161,6 +161,7 @@ class RedGymEnv(Env):
         self.died_count = 0
         self.party_size = 0
         self.step_count = 0
+        self.lvm_task_reward = 0
         self.progress_reward = self.get_game_state_reward()
         self.total_reward = sum([val for _, val in self.progress_reward.items()])
         self.reset_count += 1
@@ -214,7 +215,10 @@ class RedGymEnv(Env):
             self.update_frame_knn_index(obs_flat)
         else:
             self.update_seen_coords()
-            
+
+        if self.step_count % 5 == 0:
+            self.update_lvm_reward()
+
         self.update_heal_reward()
         self.party_size = self.read_m(PARTY_SIZE_ADDRESS)
 
@@ -223,10 +227,15 @@ class RedGymEnv(Env):
         self.last_health = self.read_hp_fraction()
 
         # shift over short term reward memory
-        self.recent_memory = np.roll(self.recent_memory, 3)
+        self.recent_memory = np.roll(self.recent_memory, 4)
         self.recent_memory[0, 0] = min(new_prog[0] * 64, 255)
         self.recent_memory[0, 1] = min(new_prog[1] * 64, 255)
         self.recent_memory[0, 2] = min(new_prog[2] * 128, 255)
+        self.recent_memory[0, 3] = min(new_prog[3] * 64, 255)
+
+        '''DEBUG'''
+        print("In this stage, your level award is: " + str(self.recent_memory[0, 0]) + ". Your health reward is: " + str(self.recent_memory[0, 1]) + ". Your explore reward is: " + str(self.recent_memory[0, 2])  + ". Your LVM task reward is: " + str(self.recent_memory[0, 3]) + ". ")
+
 
         step_limit_reached = self.check_if_done()
 
@@ -336,7 +345,9 @@ class RedGymEnv(Env):
         return (new_step, 
                    (new_prog[0]-old_prog[0], 
                     new_prog[1]-old_prog[1], 
-                    new_prog[2]-old_prog[2])
+                    new_prog[2]-old_prog[2],
+                    new_prog[3]-old_prog[3]
+                    )
                )
     
     def group_rewards(self):
@@ -344,7 +355,9 @@ class RedGymEnv(Env):
         # these values are only used by memory
         return (prog['level'] * 100 / self.reward_scale, 
                 self.read_hp_fraction()*2000, 
-                prog['explore'] * 150 / (self.explore_weight * self.reward_scale))
+                prog['explore'] * 150 / (self.explore_weight * self.reward_scale),
+                prog['task'] / self.reward_scale
+                )
                #(prog['events'], 
                # prog['levels'] + prog['party_xp'], 
                # prog['explore'])
@@ -495,9 +508,17 @@ class RedGymEnv(Env):
         else:
             state = 'consume'
 
-        reward_value = reward_complete_compare("gpt-4-turbo", state, "get out of the room", history=self.lvm_compare_reward_history)
+        v = reward_complete_compare("gpt-4-turbo", state, "get out of the room", self.render(reduce_res=False) ,history=self.lvm_compare_reward_history)
 
-        state += 1
+        if v == 10:
+            comp = True
+        else:
+            comp = False
+
+        self.lvm_task_reward += v
+        self.lvm_compare_reward_count += 1
+
+
                 
     def get_all_events_reward(self):
         # adds up all event flags, exclude museum ticket
@@ -553,6 +574,7 @@ class RedGymEnv(Env):
             #'op_poke': self.reward_scale*self.max_opponent_poke * 800,
             #'money': self.reward_scale* money * 3,
             #'seen_poke': self.reward_scale * seen_poke_count * 400,
+            'task': self.reward_scale * self.lvm_task_reward,
             'explore': self.reward_scale * self.get_knn_reward()
         }
         
