@@ -70,7 +70,7 @@ def reward_complete_compare(model, state, goal, input, history = []):
               return 0
 
         res_json = json_parser(res_msg)
-        print('DEBUG in reward_complete_compare: json parser:', res_json)
+     #    print('DEBUG in reward_complete_compare: json parser:', res_json)
 
         rate = next((button for button in ["much worse", "worse", "nearly the same", "better", "much better", "completed"] if button in res_json), None)
         print('DEBUG in reward_complete_compare: LLM return rate', rate)

@@ -78,6 +78,15 @@ class RedGymEnv(Env):
         self.metadata = {"render.modes": []}
         self.reward_range = (0, 15000)
 
+        self.ind_to_actions = [
+            "DOWN",
+            "LEFT",
+            "RIGHT",
+            "UP",
+            "A",
+            "B",
+        ]
+
         self.valid_actions = [
             WindowEvent.PRESS_ARROW_DOWN,
             WindowEvent.PRESS_ARROW_LEFT,
@@ -248,8 +257,10 @@ class RedGymEnv(Env):
         self.recent_memory[0, 1] = min(new_prog[1] * 64, 255)
         self.recent_memory[0, 2] = min( (new_prog[2] + new_prog[3]) / 2  * 128, 255)
 
+        act_str = self.ind_to_actions[action]
+
         '''DEBUG'''
-        print("In this stage, your level award is: " + str(new_prog[0]) + ". Your health reward is: " + str(new_prog[1]) + ". Your explore reward is: " + str(new_prog[2])  + ". Your LVM task reward is: " + str(new_prog[3]) + ". ")
+        print("In this stage, you take the action: " + act_str + ". Your level award is: " + str(new_prog[0]) + ". Your health reward is: " + str(new_prog[1]) + ". Your explore reward is: " + str(new_prog[2])  + ". Your LVM task reward is: " + str(new_prog[3]) + ". ")
 
 
         step_limit_reached = self.check_if_done()
