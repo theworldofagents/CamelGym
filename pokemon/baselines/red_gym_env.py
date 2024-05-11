@@ -260,7 +260,8 @@ class RedGymEnv(Env):
         act_str = self.ind_to_actions[action]
 
         '''DEBUG'''
-        print("In this stage, you take the action: " + act_str + ". Your level award is: " + str(new_prog[0]) + ". Your health reward is: " + str(new_prog[1]) + ". Your explore reward is: " + str(new_prog[2])  + ". Your LVM task reward is: " + str(new_prog[3]) + ". ")
+        print("In this stage, you take the action: " + act_str + ". \n" )
+        #Your level award is: " + str(new_prog[0]) + ". Your health reward is: " + str(new_prog[1]) + ". Your explore reward is: " + str(new_prog[2])  + ". Your LVM task reward is: " + str(new_prog[3]) + ". ")
 
 
         step_limit_reached = self.check_if_done()
@@ -449,9 +450,9 @@ class RedGymEnv(Env):
             prog_string += f' sum: {self.total_reward:5.2f}'
             print(f'\r{prog_string}', end='', flush=True)
         
-        if self.step_count % 50 == 0:
+        if self.step_count % 1 == 0:
             plt.imsave(
-                self.s_path / Path(f'curframe_{self.instance_id}.jpeg'), 
+                self.s_path / Path(f'curframe_{self.instance_id}_{self.step_count}.jpeg'), 
                 self.render(reduce_res=False))
 
         if self.print_rewards and done:
