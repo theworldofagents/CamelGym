@@ -354,7 +354,8 @@ class RedGymEnv(Env):
                 self.knn_index.add_items(
                     frame_vec, np.array([self.knn_index.get_current_count()])
                 )
-                updated = True
+                if distances[0][0] > self.similar_frame_dist * 6:
+                    updated = True
         return updated 
     
     def update_seen_coords(self):
@@ -547,7 +548,7 @@ class RedGymEnv(Env):
         # else:
         #     state = 'consume'
 
-        v = reward_complete_compare("gpt-4-turbo", self.goal_state, self.goals, self.render(reduce_res=False) ,history=self.lvm_compare_reward_history)
+        v = reward_complete_compare("gpt-4-turbo", self.goal_state, self.goals, self.novel_frames ,history=self.lvm_compare_reward_history)
         #v = 0
         
         if v == 10: # task completed, turn to next task, and set initial task screen
@@ -557,7 +558,7 @@ class RedGymEnv(Env):
 
             self.lvm_compare_reward_history = [] #task completed, eliminate memory
             """set this frame as the initial frame of the next task"""
-            reward_complete_compare("gpt-4-turbo", self.goal_state, self.goals, self.render(reduce_res=False) ,history=self.lvm_compare_reward_history)
+            reward_complete_compare("gpt-4-turbo", self.goal_state, self.goals, self.novel_frames ,history=self.lvm_compare_reward_history)
             self.goal_state += 1 # set state to "compare"
 
         elif v == -10: #task rebase logic: beta
