@@ -191,7 +191,8 @@ class RedGymEnv(Env):
         self.total_reward = sum([val for _, val in self.progress_reward.items()])
         self.reset_count += 1
         self.goal_state = 0
-        self.goals = ['Get out of the room','Walk up out of this town','Find and enter the next town','Go to the Pokemon Center of this town']
+        self.novel_frames = []
+        self.goals = ['Get out of the house','Go to the grass field','Go up to the next town','Go to the Pokemon Center']
         return self.render(), {}
     
     def init_knn(self):
@@ -226,6 +227,7 @@ class RedGymEnv(Env):
         return game_pixels_render
     
     def step(self, action):
+        updated_explore = False
 
         self.run_action_on_emulator(action)
         self.append_agent_stats(action)
@@ -239,12 +241,16 @@ class RedGymEnv(Env):
             frame_start:frame_start+self.output_shape[0], ...].flatten().astype(np.float32)
 
         if self.use_screen_explore:
-            self.update_frame_knn_index(obs_flat)
+            updated_explore = self.update_frame_knn_index(obs_flat)
         else:
             self.update_seen_coords()
 
+        if updated_explore:
+            self.novel_frames.append(self.render(reduce_res=False))
+
         if self.step_count % 512 == 0:
             self.update_lvm_reward()
+            self.novel_frames = []
 
         self.update_heal_reward()
         self.party_size = self.read_m(PARTY_SIZE_ADDRESS)
@@ -327,6 +333,7 @@ class RedGymEnv(Env):
         })
 
     def update_frame_knn_index(self, frame_vec):
+        updated = False
         
         if self.get_levels_sum() >= 22 and not self.levels_satisfied:
             self.levels_satisfied = True
@@ -338,6 +345,7 @@ class RedGymEnv(Env):
             self.knn_index.add_items(
                 frame_vec, np.array([self.knn_index.get_current_count()])
             )
+            updated = True
         else:
             # check for nearest frame and add if current 
             labels, distances = self.knn_index.knn_query(frame_vec, k = 1)
@@ -346,6 +354,8 @@ class RedGymEnv(Env):
                 self.knn_index.add_items(
                     frame_vec, np.array([self.knn_index.get_current_count()])
                 )
+                updated = True
+        return updated 
     
     def update_seen_coords(self):
         x_pos = self.read_m(X_POS_ADDRESS)

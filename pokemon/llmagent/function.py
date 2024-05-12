@@ -23,14 +23,16 @@ def reward_complete_compare(model, state, goals, input, history = []):
         goal = goals[goal_ind]
         completed_tasks = ". ".join(goals[:goal_ind])
 
+        frame_list = []
+
         rate_to_index = {
-            "incompleted": -10,
-            "much worse": -5,
-            "worse": -1,
+            "incompleted": -2,
+            "much worse": -1,
+            "worse": -0.2,
             "nearly the same": 0,
-            "better": 1,
-            "much better": 5,
-            "completed": 10,
+            "better": 0.2,
+            "much better": 1,
+            "completed": 2,
         }
 
         if "gpt" in model:
@@ -38,7 +40,10 @@ def reward_complete_compare(model, state, goals, input, history = []):
         else:
              client = OpenAI()
 
-        img = encode_img(input)
+        for img in input:
+            frame_list.append(encode_img(img))
+
+     #    img = encode_img(input)
 
         if state % 5 == 0:
              prompt = f"""
@@ -82,16 +87,23 @@ def reward_complete_compare(model, state, goals, input, history = []):
                     #     Return a JSON array as the result. One of the five options should be the key, and the value should be the probability (0-1) of this result. For example: \{ "nearly the same": 0.8 \}
                     #     """
 #                        completed: Considering the current state, there may no relations between the task and the current state. The player has completed the task. The current state is likely what happened after completing this task. Never return this if the player has not completely done the task, even it is very very close to achieve the task.
-        img = {
+
+        img_cont_list = [content_wrap(
+          {
                     "url": f"data:image/jpeg;base64,{img}"
-        }
+          }, type = "image_url")[0] for img in frame_list
+          ]
+
+          #    img = {
+          #                "url": f"data:image/jpeg;base64,{img}"
+          #    }
 
         # Get the user's input
-        user_input = content_wrap(prompt) + content_wrap(img, type = "image_url")
+        user_input = content_wrap(prompt) + img_cont_list
         
         # Handle the input
         res_msg = handle_input(user_input, client, model, history, "user", "assistant")
-        print('DEBUG in reward_complete_compare: LLM return response:', res_msg)
+        print('\n DEBUG in reward_complete_compare: LLM return response:', res_msg)
 
         if state % 5 == 0:
               return 0
