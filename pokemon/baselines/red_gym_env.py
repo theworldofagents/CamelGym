@@ -190,6 +190,8 @@ class RedGymEnv(Env):
         self.progress_reward = self.get_game_state_reward()
         self.total_reward = sum([val for _, val in self.progress_reward.items()])
         self.reset_count += 1
+        self.goal_state = 0
+        self.goals = ['Get out of the room','Walk up out of this town','Find and enter the next town','Go to the Pokemon Center of this town']
         return self.render(), {}
     
     def init_knn(self):
@@ -530,18 +532,25 @@ class RedGymEnv(Env):
                 self.died_count += 1
 
     def update_lvm_reward(self):
-        if self.lvm_compare_reward_count == 0:
-            state = 'init'
-        else:
-            state = 'consume'
+        # if self.lvm_compare_reward_count == 0:
+        #     self.goal_state = 0
+        # else:
+        #     state = 'consume'
 
-        v = reward_complete_compare("gpt-4-turbo", state, "get out of the room", self.render(reduce_res=False) ,history=self.lvm_compare_reward_history)
+        v = reward_complete_compare("gpt-4-turbo", self.goal_state, self.goals, self.render(reduce_res=False) ,history=self.lvm_compare_reward_history)
         #v = 0
         
         if v == 10:
-            comp = True
-        else:
-            comp = False
+            self.goal_state += 4
+            if self.goal_state // 5 > len(self.goals) - 1:
+                self.goal_state = (len(self.goals) - 1) * 5
+        elif v == -10:
+            self.goal_state -= 4
+            if self.goal_state < 0:
+                self.goal_state = 0
+        elif self.goal_state % 5 == 0:
+            self.goal_state += 1
+
 
         self.lvm_task_reward += v
         self.lvm_compare_reward_count += 1
