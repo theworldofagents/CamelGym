@@ -93,7 +93,7 @@ def reward_complete_compare(model, state, goals, input, history = []):
         res_msg = handle_input(user_input, client, model, history, "user", "assistant")
         print('DEBUG in reward_complete_compare: LLM return response:', res_msg)
 
-        if state == 'init':
+        if state % 5 == 0:
               return 0
 
         res_json = json_parser(res_msg)
