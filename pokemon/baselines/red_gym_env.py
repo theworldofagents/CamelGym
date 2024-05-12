@@ -241,7 +241,7 @@ class RedGymEnv(Env):
         else:
             self.update_seen_coords()
 
-        if self.step_count % 5 == 0:
+        if self.step_count % 512 == 0:
             self.update_lvm_reward()
 
         self.update_heal_reward()
@@ -450,7 +450,7 @@ class RedGymEnv(Env):
             prog_string += f' sum: {self.total_reward:5.2f}'
             print(f'\r{prog_string}', end='', flush=True)
         
-        if self.step_count % 1 == 0:
+        if self.step_count % 50 == 0:
             plt.imsave(
                 self.s_path / Path(f'curframe_{self.instance_id}_{self.step_count}.jpeg'), 
                 self.render(reduce_res=False))
@@ -536,7 +536,8 @@ class RedGymEnv(Env):
             state = 'consume'
 
         v = reward_complete_compare("gpt-4-turbo", state, "get out of the room", self.render(reduce_res=False) ,history=self.lvm_compare_reward_history)
-
+        #v = 0
+        
         if v == 10:
             comp = True
         else:
@@ -601,7 +602,7 @@ class RedGymEnv(Env):
             #'op_poke': self.reward_scale*self.max_opponent_poke * 800,
             #'money': self.reward_scale* money * 3,
             #'seen_poke': self.reward_scale * seen_poke_count * 400,
-            'task': self.reward_scale * self.lvm_task_reward,
+            'task': self.reward_scale* self.lvm_task_reward,
             'explore': self.reward_scale * self.get_knn_reward()
         }
         

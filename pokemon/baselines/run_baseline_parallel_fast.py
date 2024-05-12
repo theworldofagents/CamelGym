@@ -9,6 +9,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.callbacks import CheckpointCallback, CallbackList
 from tensorboard_callback import TensorboardCallback
+from datetime import datetime
 
 current_path = os.getcwd()
 parent_path = os.path.abspath(os.path.join(current_path, os.pardir))
@@ -32,7 +33,12 @@ if __name__ == '__main__':
 
     use_wandb_logging = False
     ep_length = 2048 * 10
-    sess_id = str(uuid.uuid4())[:8]
+
+    now = datetime.now()
+    # Format the current time as a string suitable for a file name
+    log_file_name = now.strftime("%Y-%m-%d_%H-%M-%S")
+
+    sess_id = log_file_name
     sess_path = Path(f'session_{sess_id}')
 
     env_config = {
@@ -82,7 +88,7 @@ if __name__ == '__main__':
         model.rollout_buffer.reset()
     else:
         model = PPO('CnnPolicy', env, verbose=1, n_steps=ep_length // 8, batch_size=128, n_epochs=3, gamma=0.998, tensorboard_log=sess_path)
-
+        # model = PPO('CnnPolicy', env, learning_rate=0.03, verbose=1, n_steps=5, batch_size=2, n_epochs=3, gamma=0.998, clip_range=1, tensorboard_log=sess_path)
     # run for up to 5k episodes
     model.learn(total_timesteps=(ep_length)*num_cpu*5000, callback=CallbackList(callbacks))
 
