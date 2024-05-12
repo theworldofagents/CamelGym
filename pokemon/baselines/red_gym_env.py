@@ -262,7 +262,7 @@ class RedGymEnv(Env):
         act_str = self.ind_to_actions[action]
 
         '''DEBUG'''
-        print("In this stage, you take the action: " + act_str + ". \n" )
+        # print("In this stage, you take the action: " + act_str + ". \n" )
         #Your level award is: " + str(new_prog[0]) + ". Your health reward is: " + str(new_prog[1]) + ". Your explore reward is: " + str(new_prog[2])  + ". Your LVM task reward is: " + str(new_prog[3]) + ". ")
 
 
@@ -445,14 +445,14 @@ class RedGymEnv(Env):
             self.pyboy.save_state(f)
 
     def save_and_print_info(self, done, obs_memory):
-        if self.print_rewards:
+        if self.print_rewards and self.step_count % 64 == 0:
             prog_string = f'step: {self.step_count:6d}'
             for key, val in self.progress_reward.items():
                 prog_string += f' {key}: {val:5.2f}'
             prog_string += f' sum: {self.total_reward:5.2f}'
             print(f'\r{prog_string}', end='', flush=True)
         
-        if self.step_count % 50 == 0:
+        if self.step_count % 64 == 0:
             plt.imsave(
                 self.s_path / Path(f'curframe_{self.instance_id}_{self.step_count}.jpeg'), 
                 self.render(reduce_res=False))
@@ -540,20 +540,23 @@ class RedGymEnv(Env):
         v = reward_complete_compare("gpt-4-turbo", self.goal_state, self.goals, self.render(reduce_res=False) ,history=self.lvm_compare_reward_history)
         #v = 0
         
-        if v == 10:
-            self.goal_state += 4
+        if v == 10: # task completed, turn to next task, and set initial task screen
+            self.goal_state += 4 # turn state to "init" of the next task
             if self.goal_state // 5 > len(self.goals) - 1:
                 self.goal_state = (len(self.goals) - 1) * 5
 
             self.lvm_compare_reward_history = [] #task completed, eliminate memory
             """set this frame as the initial frame of the next task"""
             reward_complete_compare("gpt-4-turbo", self.goal_state, self.goals, self.render(reduce_res=False) ,history=self.lvm_compare_reward_history)
-            self.goal_state += 1
+            self.goal_state += 1 # set state to "compare"
 
         elif v == -10: #task rebase logic: beta
             self.goal_state -= 4
             if self.goal_state < 0:
                 self.goal_state = 0
+        
+        elif v == 0: #it means state is 'init', and initial screen has been set
+            self.goal_state += 1  # set state to "compare"
         # elif self.goal_state % 5 == 0:
         #     self.goal_state += 1
 
