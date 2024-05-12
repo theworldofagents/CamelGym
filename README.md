@@ -77,11 +77,13 @@ export OPENAI_API_KEY=<insert your OpenAI API key>
 OPENAI_API_BASE_URL=<inert your OpenAI API BASE URL>  #(Should you utilize an OpenAI proxy service, kindly specify this)
 ```
 4. Run:  
-```python ./pokemon/baselines/run_llm.py```
-
-Now I simply append all history message as input to gpt, so it would reach the GPT limitation after few iterations.
+```python ./pokemon/baselines/run_baseline_parallel_fast.py```
 
 
 ## TODO Env
 1. robotic simulator
 2. cell 
+3. minecraft
+4. amongus
+5. trade
+6. town
