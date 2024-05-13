@@ -56,6 +56,7 @@ class RedGymEnv(Env):
         self.early_stopping = config['early_stop']
         self.save_video = config['save_video']
         self.fast_video = config['fast_video']
+        self.brain = config['brain']
         self.video_interval = 256 * self.act_freq
         self.downsample_factor = 2
         self.frame_stacks = 3
@@ -548,7 +549,7 @@ class RedGymEnv(Env):
         # else:
         #     state = 'consume'
 
-        v = reward_complete_compare("gpt-4-turbo", self.goal_state, self.goals, self.novel_frames ,history=self.lvm_compare_reward_history)
+        v = reward_complete_compare(self.brain, self.goal_state, self.goals, self.novel_frames ,history=self.lvm_compare_reward_history)
         #v = 0
         
         if v == 2: # task completed, turn to next task, and set initial task screen
@@ -558,7 +559,7 @@ class RedGymEnv(Env):
 
             self.lvm_compare_reward_history = [] #task completed, eliminate memory
             """set this frame as the initial frame of the next task"""
-            reward_complete_compare("gpt-4-turbo", self.goal_state, self.goals, self.novel_frames ,history=self.lvm_compare_reward_history)
+            reward_complete_compare(self.brain, self.goal_state, self.goals, self.novel_frames ,history=self.lvm_compare_reward_history)
             self.goal_state += 1 # set state to "compare"
 
         elif v == -2: #task rebase logic: beta
