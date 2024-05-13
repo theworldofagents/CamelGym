@@ -46,8 +46,9 @@ if __name__ == '__main__':
                 'action_freq': 24, 'init_state': os.path.join(current_path, 'pokemon', 'has_pokedex_nballs.state'), 'max_steps': ep_length, 
                 'print_rewards': True, 'save_video': False, 'fast_video': True, 'session_path': sess_path,
                 'gb_path': os.path.join(current_path, 'pokemon', 'PokemonRed.gb'), 'debug': False, 'sim_frame_dist': 2_000_000.0, 
-                'use_screen_explore': True, 'reward_scale': 4, 'extra_buttons': False,
-                'explore_weight': 3 # 2.5
+                'use_screen_explore': True, 'reward_scale': 4, 'extra_buttons': False, 
+                'explore_weight': 3, # 2.5
+                'brain':'gpt-4o'
             }
     
     print(env_config)

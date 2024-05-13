@@ -551,7 +551,7 @@ class RedGymEnv(Env):
         v = reward_complete_compare("gpt-4-turbo", self.goal_state, self.goals, self.novel_frames ,history=self.lvm_compare_reward_history)
         #v = 0
         
-        if v == 10: # task completed, turn to next task, and set initial task screen
+        if v == 2: # task completed, turn to next task, and set initial task screen
             self.goal_state += 4 # turn state to "init" of the next task
             if self.goal_state // 5 > len(self.goals) - 1:
                 self.goal_state = (len(self.goals) - 1) * 5
@@ -561,7 +561,7 @@ class RedGymEnv(Env):
             reward_complete_compare("gpt-4-turbo", self.goal_state, self.goals, self.novel_frames ,history=self.lvm_compare_reward_history)
             self.goal_state += 1 # set state to "compare"
 
-        elif v == -10: #task rebase logic: beta
+        elif v == -2: #task rebase logic: beta
             self.goal_state -= 4
             if self.goal_state < 0:
                 self.goal_state = 0
