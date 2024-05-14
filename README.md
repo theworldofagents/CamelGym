@@ -1,5 +1,5 @@
 <!-- <p align="center">
-<img width="180" height="180" style="vertical-align:middle" src="https://github.com/WuJunde/werewolf_ai_agents/blob/main/werewolf_logo.png" />
+<img width="180" height="180" style="vertical-align:middle" src="https://github.com/theworldofagents/werewolf_ai_agents/blob/main/werewolf_logo.png" />
 </p> -->
 <h1 align="center">
 <span><i>CamelGym</i></span>
@@ -18,7 +18,7 @@ CamelGym provides environments to train LLM (Lange Language Model) based Agents.
 
 ## Environments
 
-|<img align="left" width="450" height="200" src="https://github.com/WuJunde/CamelGym/blob/main/poke_fig.png">|<img align="right" width="450" height="200" src="https://github.com/WuJunde/CamelGym/blob/main/werewolf_fig.png">|
+|<img align="left" width="450" height="200" src="https://github.com/WuJunde/CamelGym/blob/main/poke_fig.png">|<img align="right" width="450" height="200" src="https://github.com/theworldofagents/CamelGym/blob/main/werewolf_fig.png">|
 |:--:|:--:| 
 | **Pokemon-Red** | **Werewolf (social game)** |
 
