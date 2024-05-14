@@ -249,7 +249,8 @@ class RedGymEnv(Env):
         if updated_explore:
             self.novel_frames.append(self.render(reduce_res=False))
 
-        if self.step_count % 512 == 0:
+        if self.step_count % 512 == 0: 
+            self.novel_frames.append(self.render(reduce_res=False)) #append current frame at last
             self.update_lvm_reward()
             self.novel_frames = []
 

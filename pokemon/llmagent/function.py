@@ -101,6 +101,7 @@ def reward_complete_compare(model, state, goals, input, history = []):
         # Get the user's input
         if len(img_cont_list) > 8:
               img_cont_list = img_cont_list[-8:]
+              
         user_input = content_wrap(prompt) + img_cont_list
         print('\n DEBUG the length of img list is:', len(img_cont_list))
 

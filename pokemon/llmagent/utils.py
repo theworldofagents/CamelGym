@@ -69,6 +69,16 @@ def encode_img(image):
     return base64.b64encode(image_data).decode('utf-8')
 
 def json_parser(input):
-    res = input.split('```json\n')[1].split('\n```')[0]  
-    res = json.loads(res)
+    try:
+        res = input.split('```json\n')[1].split('\n```')[0]  
+    except IndexError:
+        print("Warn: model did not return output in json")
+        res = input
+
+    try:
+        res = json.loads(res)
+    except json.decoder.JSONDecodeError:
+        res = input.split('```\n')[1].split('\n```')[0] 
+        res = json.loads(res)
+        
     return res
