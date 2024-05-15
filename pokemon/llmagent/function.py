@@ -26,13 +26,13 @@ def reward_complete_compare(model, state, goals, input, history = []):
         frame_list = []
 
         rate_to_index = {
-            "incompleted": -2,
-            "much worse": -1,
-            "worse": -0.2,
-            "nearly the same": -0.1,
-            "better": 0.2,
-            "much better": 1,
-            "completed": 2,
+            "incompleted": -10,
+            "much worse": -5,
+            "worse": -2,
+            "nearly the same": -1,
+            "better": 2,
+            "much better": 5,
+            "completed": 10,
         }
 
         if "gpt" in model:
@@ -103,7 +103,7 @@ def reward_complete_compare(model, state, goals, input, history = []):
               img_cont_list = img_cont_list[-8:]
 
         user_input = content_wrap(prompt) + img_cont_list
-        print('\n DEBUG the length of img list is:', len(img_cont_list))
+     #    print('\n DEBUG the length of img list is:', len(img_cont_list))
 
         # Handle the input
         res_msg = handle_input(user_input, client, model, history, "user", "assistant")
@@ -116,7 +116,7 @@ def reward_complete_compare(model, state, goals, input, history = []):
      #    print('DEBUG in reward_complete_compare: json parser:', res_json)
 
         rate = next((button for button in ["incompleted", "much worse", "worse", "nearly the same", "better", "much better", "completed"] if button in res_json), None)
-        print('DEBUG in reward_complete_compare: LLM return rate', rate)
+     #    print('DEBUG in reward_complete_compare: LLM return rate', rate)
 
         value = rate_to_index[rate]
         

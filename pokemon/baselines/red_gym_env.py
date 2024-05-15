@@ -66,9 +66,11 @@ class RedGymEnv(Env):
         self.reward_scale = 1 if 'reward_scale' not in config else config['reward_scale']
         self.extra_buttons = False if 'extra_buttons' not in config else config['extra_buttons']
         self.instance_id = str(uuid.uuid4())[:8] if 'instance_id' not in config else config['instance_id']
+        self.goals =config['goals']
         self.s_path.mkdir(exist_ok=True)
         self.reset_count = 0
         self.all_runs = []
+        self.mem_limit = 5
 
         self.goal_reward = 0
         self.lvm_compare_reward_count = 0
@@ -193,7 +195,6 @@ class RedGymEnv(Env):
         self.reset_count += 1
         self.goal_state = 0
         self.novel_frames = []
-        self.goals = ['Get out of the house','Go to the grass field','Go up to the next town','Go to the Pokemon Center']
         return self.render(), {}
     
     def init_knn(self):
@@ -249,7 +250,8 @@ class RedGymEnv(Env):
         if updated_explore:
             self.novel_frames.append(self.render(reduce_res=False))
 
-        if self.step_count % 512 == 0: 
+        if self.step_count % 256 == 0 and self.brain: 
+            print('\n In the step:', self.step_count)
             self.novel_frames.append(self.render(reduce_res=False)) #append current frame at last
             self.update_lvm_reward()
             self.novel_frames = []
@@ -549,11 +551,12 @@ class RedGymEnv(Env):
         #     self.goal_state = 0
         # else:
         #     state = 'consume'
-
+        if len(self.lvm_compare_reward_history) > self.mem_limit: #memory limitation
+            self.lvm_compare_reward_history = self.lvm_compare_reward_history[-self.mem_limit:]
         v = reward_complete_compare(self.brain, self.goal_state, self.goals, self.novel_frames ,history=self.lvm_compare_reward_history)
         #v = 0
         
-        if v == 2: # task completed, turn to next task, and set initial task screen
+        if v == 10: # task completed, turn to next task, and set initial task screen
             self.goal_state += 4 # turn state to "init" of the next task
             if self.goal_state // 5 > len(self.goals) - 1:
                 self.goal_state = (len(self.goals) - 1) * 5
@@ -563,7 +566,7 @@ class RedGymEnv(Env):
             reward_complete_compare(self.brain, self.goal_state, self.goals, self.novel_frames ,history=self.lvm_compare_reward_history)
             self.goal_state += 1 # set state to "compare"
 
-        elif v == -2: #task rebase logic: beta
+        elif v == -10: #task rebase logic: beta
             self.goal_state -= 4
             if self.goal_state < 0:
                 self.goal_state = 0

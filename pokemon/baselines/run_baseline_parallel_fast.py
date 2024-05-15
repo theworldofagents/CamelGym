@@ -48,7 +48,8 @@ if __name__ == '__main__':
                 'gb_path': os.path.join(current_path, 'pokemon', 'PokemonRed.gb'), 'debug': False, 'sim_frame_dist': 2_000_000.0, 
                 'use_screen_explore': True, 'reward_scale': 4, 'extra_buttons': False, 
                 'explore_weight': 3, # 2.5
-                'brain':'gpt-4-turbo' #gpt4-turbo
+                'goals': ['Get out of the house','Go to the grass field (dark grey tiles)','Go up to the next town','Go to the Pokemon Center'],
+                'brain':'gpt-4o' #gpt4-turbo, gpt-4o
             }
     
     print(env_config)
