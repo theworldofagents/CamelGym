@@ -14,7 +14,7 @@ Train Agents to Play Werewolf
         <img alt="Discord" src="https://img.shields.io/discord/1146610656779440188?logo=discord&style=flat&logoColor=white"/></a>
     <img src="https://img.shields.io/static/v1?label=license&message=GPL&color=white&style=flat" alt="License"/>
 </p> -->
-CamelGym provides environments to train LLM (Lange Language Model) based Agents. It is built on the exceptional multi-agent interaction framework, [CAMEL](https://www.camel-ai.org). 
+CamelGym provides environments to train LLM (Lange Language Model) based Agents.
 
 ## Environments
 
